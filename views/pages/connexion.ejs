@@ -1,0 +1,262 @@
+<%
+/* Le carrefour des connexions. Deux onglets (Éducation, Pharma et Entreprises),
+   quatre espaces affichés à la fois, un panneau de détail à droite (ou dessous
+   sur téléphone). Le formulaire de chaque espace reste sur sa propre page de
+   connexion : rien ne change côté compte ni côté serveur.
+
+   « suite » est repassé tel quel à la page choisie, pour qu'un visiteur
+   envoyé ici depuis une fiche y revienne après s'être connecté. */
+const suite = locals.suite || "";
+/* « suiteFixe » : destination imposée après connexion (ex. la page Wave). Elle
+   remplace « suite » seulement pour cette carte. */
+const avecSuite = (chemin, suiteFixe) => {
+  const s = suiteFixe || suite;
+  return chemin + (s ? "?suite=" + encodeURIComponent(s) : "");
+};
+
+/* Icônes au trait, toutes du même style (plus d'emojis). */
+const icone = (nom) => {
+  const traits = {
+    famille: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.8c1.6.9 2.6 2.8 3 5.2"/>',
+    prof: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>',
+    ecole: '<path d="M3 21V9l9-5 9 5v12"/><path d="M9 21v-6h6v6M3 21h18"/>',
+    eleve: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/>',
+    labo: '<path d="M9 3h6M10 3v6L4.5 18.5A1.5 1.5 0 0 0 5.8 21h12.4a1.5 1.5 0 0 0 1.3-2.5L14 9V3"/>',
+    delegue: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',
+    grossiste: '<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/>',
+    boutique: '<path d="M3 9l2-5h14l2 5"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v9h14v-9M10 21v-5h4v5"/>',
+    entreprise: '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4"/>',
+    pharmacie: '<path d="M10.5 3.5l10 10a4.2 4.2 0 0 1-6 6l-10-10a4.2 4.2 0 0 1 6-6z"/><path d="M8.5 8.5l7 7"/>',
+  };
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + traits[nom] + '</svg>';
+};
+
+/* Onglet « Najah Éducation » : les quatre espaces scolaires. */
+const espacesEducation = [
+  { cle: "famille", vers: "/connexion-parent", icone: "famille", titre: "Espace famille",
+    titreCle: "connexion_famille", pour: "Pour les parents : suivre les demandes, l'agenda des cours et la scolarité de ses enfants.",
+    pourCle: "connexion_famille_pour", creer: "/inscription", creerLib: "Créer un compte famille" },
+  { cle: "prof", vers: "/connexion-prof", icone: "prof", titre: "Espace professeur",
+    titreCle: "connexion_prof", pour: "Pour les enseignants : recevoir des demandes, répondre aux familles et tenir son agenda.",
+    pourCle: "connexion_prof_pour", creer: "/devenir-professeur", creerLib: "Devenir professeur" },
+  { cle: "ecole", vers: "/connexion-ecole", icone: "ecole", titre: "Espace établissement",
+    titreCle: "connexion_ecole", pour: "Pour les écoles : notes et bulletins, absences, devoirs, et recrutement de professeurs.",
+    pourCle: "connexion_ecole_pour", creer: "/inscription-ecole", creerLib: "Inscrire mon établissement" },
+  { cle: "eleve", vers: "/connexion-eleve", icone: "eleve", titre: "Espace élève",
+    titreCle: "connexion_eleve", pour: "Pour les élèves : ses notes, ses devoirs et ses récompenses, avec l'identifiant donné par son école.",
+    pourCle: "connexion_eleve_pour", creer: null, creerLib: null },
+];
+
+/* Onglet « Najah Pharma et Entreprises » : écrit en français, comme les
+   écrans de ces modules. Ce sont les seules cartes sans clé de traduction. */
+const espacesPro = [
+  { cle: "labo", vers: "/connexion-labo", icone: "labo", titre: "Espace laboratoire",
+    pour: "Pour les laboratoires : délégués, produits, objectifs, visites, rémunérations et grossistes.",
+    creer: "/pharma", creerLib: "Créer le compte du laboratoire" },
+  { cle: "delegue", vers: "/connexion-delegue", icone: "delegue", titre: "Espace délégué médical",
+    pour: "Pour les délégués : saisir ses visites et suivre ses objectifs. Le compte est donné par votre laboratoire.",
+    creer: null, creerLib: null },
+  { cle: "grossiste", vers: "/connexion-grossiste", icone: "grossiste", titre: "Espace grossiste",
+    pour: "Pour les grossistes : déclarer ses ventes des produits d'un laboratoire. L'accès se fait par le lien d'invitation du laboratoire.",
+    creer: null, creerLib: null },
+  { cle: "boutique", vers: "/connexion-boutique", icone: "boutique", titre: "Espace boutique",
+    pour: "Pour les commerces : caisse, stock, clients, fournisseurs, dépenses et marges.",
+    creer: "/entreprises", creerLib: "Créer le compte boutique" },
+  { cle: "entreprise", vers: "/connexion-entreprise", icone: "entreprise", titre: "Espace entreprise",
+    pour: "Pour les PME : personnel, tâches, recettes et dépenses, et suivi de chantiers.",
+    creer: "/entreprises", creerLib: "Créer le compte entreprise" },
+  /* Gestion d'agence Wave : espace indépendant, avec son propre compte. Il ne
+     partage ni identifiants ni pages avec l'espace Entreprise. Les demandes sont
+     reçues ; l'activation n'a lieu qu'après validation manuelle de l'administration.
+     Le logo officiel est affiché depuis /images/logo-wave.png s'il est présent. */
+  { cle: "wave", vers: "/wave-connexion.html", icone: "entreprise",
+    logo: "/images/logo-wave.png", titre: "Gestion d'agence Wave Sénégal",
+    pour: "Pour les agences Wave : caisse du jour, dépôts et retraits, conversion FCFA / MRU, rapports et historique. Demande d'activation après validation du paiement.",
+    creer: "/wave-inscription.html", creerLib: "Créer mon compte Wave" },
+];
+
+/* Onglet « Pharmaceutique » : tout ce qui concerne les pharmacies. */
+const espacesPharma = [
+  { cle: "pharmacie", vers: "/connexion-pharmacie", icone: "pharmacie", titre: "Espace pharmacie",
+    pour: "Pour les pharmacies : factures des grossistes, stock par lot et péremption, ventes, créances, dépenses et tableau de bord.",
+    creer: "/inscription-pharmacie", creerLib: "Créer le compte pharmacie" },
+];
+const TUILES_VISIBLES = 6;
+%>
+<%- include("../partials/head", {
+  titre: "Se connecter",
+  description: "Connectez-vous à votre espace Najah : famille, professeur, établissement scolaire ou élève.",
+  chemin: "/connexion",
+  siteUrl: siteUrl
+}) %>
+<%- include("../partials/header", { actif: "connexion" }) %>
+
+  <section class="block cx-page">
+    <div class="wrap cx-wrap">
+      <div class="section-head cx-entete">
+        <div class="section-label" data-i18n="connexion_label">CONNEXION</div>
+        <h1 data-i18n="connexion_titre">Quel est votre espace ?</h1>
+        <p class="hero-sub" data-i18n="connexion_sous_titre">Choisissez le vôtre, puis connectez-vous.</p>
+      </div>
+
+      <% if (locals.compte) { %>
+        <%# Déjà connecté : on rend son espace en un clic. %>
+        <div class="form-card active cx-deja">
+          <p class="fiche-ligne" style="margin:0 0 12px;">
+            <span data-i18n="connexion_deja">Vous êtes déjà connecté en tant que</span>
+            <strong><%= compte.nom %></strong>.
+          </p>
+          <a class="btn btn-primary" href="<%= compte.espace %>" data-i18n="nav_mon_espace">Mon espace</a>
+        </div>
+      <% } %>
+
+      <style>
+        /* Trois onglets sur téléphone : ils doivent tenir dans le cadre. */
+        @media (max-width: 520px) {
+          body.page-publique .cx-onglets { gap: 4px; padding: 4px; }
+          body.page-publique .cx-onglet { flex: 1 1 0; min-width: 0; padding: 10px 2px; font-size: 11.5px; }
+        }
+      </style>
+      <div class="cx-onglets" role="tablist" aria-label="Choisir un univers">
+        <button type="button" role="tab" id="cx-onglet-edu" class="cx-onglet" aria-selected="true" aria-controls="cx-panneau-edu" data-onglet="edu">Najah Éducation</button>
+        <button type="button" role="tab" id="cx-onglet-pro" class="cx-onglet" aria-selected="false" aria-controls="cx-panneau-pro" tabindex="-1" data-onglet="pro">Najah Pharma et Entreprises</button>
+        <button type="button" role="tab" id="cx-onglet-pharma" class="cx-onglet" aria-selected="false" aria-controls="cx-panneau-pharma" tabindex="-1" data-onglet="pharma">Pharmaceutique</button>
+      </div>
+
+      <div class="cx-corps">
+        <div class="cx-liste">
+          <% [["edu", espacesEducation], ["pro", espacesPro], ["pharma", espacesPharma]].forEach(([groupe, liste]) => { %>
+            <div class="cx-panneau" id="cx-panneau-<%= groupe %>" role="tabpanel" aria-labelledby="cx-onglet-<%= groupe %>" <%= groupe !== "edu" ? "hidden" : "" %>>
+              <div class="cx-tuiles">
+                <% liste.forEach((e, i) => { %>
+                  <button type="button" class="cx-tuile<%= i >= TUILES_VISIBLES ? " cx-tuile-plus" : "" %>" data-espace="<%= e.cle %>" data-groupe="<%= groupe %>"
+                          data-titre="<%= e.titre %>" data-pour="<%= e.pour %>" data-vers="<%= avecSuite(e.vers, e.suiteVers) %>"
+                          data-creer="<%= e.creer || "" %>" data-creer-libelle="<%= e.creerLib || "" %>"
+                          aria-pressed="false" <%= i >= TUILES_VISIBLES ? "hidden" : "" %>>
+                    <span class="cx-tuile-icone"><% if (e.logo) { %><img src="<%= e.logo %>" alt="Wave" width="22" height="22" style="object-fit:contain" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'Wave'}))"><% } else { %><%- icone(e.icone) %><% } %></span>
+                    <span class="cx-tuile-texte">
+                      <span class="cx-tuile-titre"<% if (e.titreCle) { %> data-i18n="<%= e.titreCle %>"<% } %>><%= e.titre %></span>
+                      <span class="cx-tuile-pour"<% if (e.pourCle) { %> data-i18n="<%= e.pourCle %>"<% } %>><%= e.pour %></span>
+                    </span>
+                    <span class="cx-tuile-coche" aria-hidden="true">✓</span>
+                  </button>
+                <% }); %>
+              </div>
+              <% if (liste.length > TUILES_VISIBLES) { %>
+                <button type="button" class="cx-plus" data-plus="<%= groupe %>" aria-expanded="false">Voir les autres espaces</button>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+
+        <aside class="cx-detail" id="cx-detail" aria-live="polite">
+          <div class="cx-detail-vide" id="cx-detail-vide">
+            <p>Choisissez un espace à gauche pour vous connecter.</p>
+          </div>
+          <div class="cx-detail-plein" id="cx-detail-plein" hidden>
+            <p class="cx-detail-etiquette">Connexion à l'espace</p>
+            <h2 class="cx-detail-titre" id="cx-detail-titre"></h2>
+            <p class="cx-detail-pour" id="cx-detail-pour"></p>
+            <a class="btn btn-primary cx-detail-bouton" id="cx-detail-lien" href="#">Continuer vers la connexion</a>
+            <p class="cx-detail-creer" id="cx-detail-creer" hidden></p>
+            <p class="cx-detail-note" id="cx-detail-note" hidden></p>
+          </div>
+        </aside>
+      </div>
+
+      <div class="form-card active cx-bas">
+        <h2 style="font-size:17px; margin-bottom:10px;" data-i18n="connexion_pas_de_compte">Pas encore de compte ?</h2>
+        <p class="switch-link" style="margin:0 0 8px;">
+          <a href="/inscription" data-i18n="connexion_creer_famille">Créer un compte famille</a> ·
+          <a href="/devenir-professeur" data-i18n="connexion_creer_prof">Devenir professeur</a> ·
+          <a href="/inscription-ecole" data-i18n="connexion_creer_ecole">Inscrire mon établissement</a>
+        </p>
+        <p class="fiche-ligne" style="margin:0; font-size:13px;" data-i18n="connexion_eleve_note">
+          Les élèves ne créent pas de compte eux-mêmes : c'est leur établissement qui leur donne un identifiant.</p>
+      </div>
+    </div>
+  </section>
+
+<script>
+(function () {
+  /* Dernier espace utilisé : mémorisé dans ce navigateur seulement.
+     Un navigateur qui refuse le stockage garde simplement la page sans mémoire. */
+  var CLE = "najah.connexion.espace";
+  function lire() { try { return localStorage.getItem(CLE); } catch (e) { return null; } }
+  function ecrire(v) { try { localStorage.setItem(CLE, v); } catch (e) {} }
+
+  var tuiles = document.querySelectorAll(".cx-tuile");
+  var onglets = document.querySelectorAll(".cx-onglet");
+  var detailVide = document.getElementById("cx-detail-vide");
+  var detailPlein = document.getElementById("cx-detail-plein");
+  var titre = document.getElementById("cx-detail-titre");
+  var pour = document.getElementById("cx-detail-pour");
+  var lien = document.getElementById("cx-detail-lien");
+  var creer = document.getElementById("cx-detail-creer");
+  var note = document.getElementById("cx-detail-note");
+
+  function montrerOnglet(groupe) {
+    onglets.forEach(function (o) {
+      var actif = o.getAttribute("data-onglet") === groupe;
+      o.setAttribute("aria-selected", actif ? "true" : "false");
+      o.tabIndex = actif ? 0 : -1;
+    });
+    document.querySelectorAll(".cx-panneau").forEach(function (p) {
+      p.hidden = p.id !== "cx-panneau-" + groupe;
+    });
+  }
+
+  function choisir(tuile, memoriser) {
+    tuiles.forEach(function (t) { t.setAttribute("aria-pressed", "false"); t.classList.remove("cx-tuile-active"); });
+    tuile.setAttribute("aria-pressed", "true");
+    tuile.classList.add("cx-tuile-active");
+    montrerOnglet(tuile.getAttribute("data-groupe"));
+    detailVide.hidden = true;
+    detailPlein.hidden = false;
+    titre.textContent = tuile.getAttribute("data-titre");
+    pour.textContent = tuile.getAttribute("data-pour");
+    lien.setAttribute("href", tuile.getAttribute("data-vers"));
+    var c = tuile.getAttribute("data-creer");
+    creer.hidden = !c;
+    if (c) {
+      creer.innerHTML = "Pas encore de compte ? <a href=\"" + c + "\"></a>";
+      creer.querySelector("a").textContent = tuile.getAttribute("data-creer-libelle");
+    }
+    note.hidden = true;
+    if (tuile.getAttribute("data-espace") === "delegue") {
+      note.textContent = "Votre compte est créé par votre laboratoire. Pas encore de mot de passe ? Demandez-le à votre responsable.";
+      note.hidden = false;
+    }
+    if (memoriser) ecrire(tuile.getAttribute("data-espace"));
+  }
+
+  tuiles.forEach(function (t) {
+    t.addEventListener("click", function () { choisir(t, true); });
+  });
+
+  onglets.forEach(function (o) {
+    o.addEventListener("click", function () { montrerOnglet(o.getAttribute("data-onglet")); });
+  });
+
+  document.querySelectorAll(".cx-plus").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var groupe = b.getAttribute("data-plus");
+      var panneau = document.getElementById("cx-panneau-" + groupe);
+      var caches = panneau.querySelectorAll(".cx-tuile-plus");
+      var ouvrir = b.getAttribute("aria-expanded") !== "true";
+      caches.forEach(function (c) { c.hidden = !ouvrir; });
+      b.setAttribute("aria-expanded", ouvrir ? "true" : "false");
+      b.textContent = ouvrir ? "Voir moins" : "Voir les autres espaces";
+    });
+  });
+
+  /* Retrouver le dernier espace utilisé, s'il existe encore sur la page. */
+  var memoire = lire();
+  if (memoire) {
+    var prec = document.querySelector('.cx-tuile[data-espace="' + memoire + '"]');
+    if (prec) choisir(prec, false);
+  }
+})();
+</script>
+
+<%- include("../partials/footer") %>

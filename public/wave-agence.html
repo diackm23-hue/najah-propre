@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Najah — Gestion d'agence Wave Sénégal</title>
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bleu:#2563EB; --encre:#0F1E3C; --gris:#6B7A90; --ligne:#E3E8EF; --fond:#F4F6FA; --ok:#16A34A; --alerte:#E2725B; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--fond); color:var(--encre); font-family:'Space Grotesk',system-ui,sans-serif; font-size:15px; padding-bottom:40px; }
+  html[dir="rtl"] body{ font-family:'Noto Sans Arabic','Space Grotesk',system-ui,sans-serif; }
+  header{ background:#fff; border-bottom:1px solid var(--ligne); padding:14px 16px; position:sticky; top:0; z-index:5; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  header h1{ font-size:18px; } header p{ font-size:12px; color:var(--gris); margin-top:2px; }
+  .langue{ display:flex; border:1px solid var(--ligne); border-radius:999px; overflow:hidden; flex:0 0 auto; }
+  .langue button{ background:#fff; border:0; font:inherit; font-size:13px; padding:6px 12px; cursor:pointer; color:var(--gris); }
+  .langue button.actif{ background:var(--bleu); color:#fff; font-weight:600; }
+  nav{ background:#fff; border-bottom:1px solid var(--ligne); display:flex; gap:4px; overflow-x:auto; padding:0 12px; position:sticky; top:66px; z-index:4; }
+  nav button{ background:none; border:0; border-bottom:2px solid transparent; font:inherit; font-size:14px; padding:12px 10px; cursor:pointer; color:var(--gris); white-space:nowrap; }
+  nav button.actif{ color:var(--encre); font-weight:600; border-bottom-color:var(--bleu); }
+  main{ max-width:980px; margin:0 auto; padding:16px; }
+  section{ display:none; } section.actif{ display:block; }
+  .carte{ background:#fff; border:1px solid var(--ligne); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .carte h2{ font-size:16px; margin-bottom:6px; } .carte h3{ font-size:14px; margin:14px 0 8px; }
+  .sub{ font-size:13px; color:var(--gris); line-height:1.5; }
+  .grille{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:12px 0; }
+  .stat{ background:#fff; border:1px solid var(--ligne); border-inline-start:4px solid var(--bleu); border-radius:12px; padding:12px; }
+  .stat small{ display:block; font-size:12px; color:var(--gris); }
+  .stat b{ display:block; font-size:18px; margin-top:4px; }
+  .formulaire{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; align-items:end; margin-top:10px; }
+  label{ font-size:12.5px; color:var(--gris); display:flex; flex-direction:column; gap:4px; }
+  input,select,textarea{ font:inherit; font-size:15px; padding:9px 10px; border:1px solid var(--ligne); border-radius:9px; background:#fff; color:var(--encre); width:100%; }
+  input:focus,select:focus,textarea:focus,button:focus{ outline:2px solid var(--bleu); outline-offset:1px; }
+  button.btn{ font:inherit; font-size:14px; font-weight:600; padding:10px 16px; border-radius:10px; border:1px solid var(--bleu); background:var(--bleu); color:#fff; cursor:pointer; }
+  button.btn.secondaire{ background:#fff; color:var(--bleu); }
+  button.btn.danger{ background:#fff; color:var(--alerte); border-color:var(--alerte); }
+  button.btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .msg{ font-size:13.5px; margin-top:10px; padding:10px 12px; border-radius:10px; display:none; }
+  .msg.ok{ display:block; background:#E9F8EF; color:#0E6B36; } .msg.ko{ display:block; background:#FDECE8; color:#9A3B26; }
+  .bandeau{ border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:14px; line-height:1.5; }
+  .bandeau.bloque{ background:#FFF7E0; border:1px solid #F0D28A; color:#6B4A00; }
+  .bandeau.actif{ background:#E9F8EF; border:1px solid #AEE3C3; color:#0E6B36; }
+  .table-defil{ overflow-x:auto; }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+  th,td{ text-align:start; padding:9px 8px; border-bottom:1px solid var(--ligne); vertical-align:top; white-space:nowrap; }
+  th{ font-size:12px; color:var(--gris); font-weight:600; }
+  tr.annulee td{ color:var(--gris); text-decoration:line-through; }
+  .badge{ display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:#EEF2F7; color:var(--encre); }
+  .badge.ok{ background:#E9F8EF; color:#0E6B36; } .badge.attente{ background:#FFF7E0; color:#6B4A00; } .badge.ko{ background:#FDECE8; color:#9A3B26; }
+  .ecart-ok{ color:var(--ok); font-weight:600; } .ecart-ko{ color:var(--alerte); font-weight:600; }
+  .vide{ padding:14px; color:var(--gris); font-size:14px; }
+  .nombre{ direction:ltr; unicode-bidi:isolate; }
+  @media (max-width:560px){ main{ padding:12px; } .carte{ padding:13px; } header h1{ font-size:16px; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 data-i18n="titre">Gestion d'agence Wave Sénégal</h1>
+    <p id="nom-agence" class="sub" style="font-weight:600"></p>
+    <p id="sous-titre">…</p>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <div class="langue" role="group" aria-label="Langue">
+      <button data-langue="fr">FR</button>
+      <button data-langue="ar">عربي</button>
+    </div>
+    <button class="btn secondaire" id="deconnexion" type="button" data-i18n="session.deconnexion">Se déconnecter</button>
+  </div>
+</header>
+<nav id="onglets">
+  <button data-onglet="accueil" class="actif" data-i18n="onglet.accueil">Accueil</button>
+  <button data-onglet="caisse" data-i18n="onglet.caisse">Caisse du jour</button>
+  <button data-onglet="convertisseur" data-i18n="onglet.convertisseur">FCFA / MRU</button>
+  <button data-onglet="historique" data-i18n="onglet.historique">Historique</button>
+  <button data-onglet="rapports" data-i18n="onglet.rapports">Rapports</button>
+  <button data-onglet="journal" data-i18n="onglet.journal">Journal</button>
+</nav>
+
+<main>
+  <!-- ACCUEIL -->
+  <section id="s-accueil" class="actif">
+    <div id="bandeau-compte" class="bandeau bloque">…</div>
+    <div class="carte">
+      <h2 data-i18n="accueil.formules">Formules</h2>
+      <p class="sub" data-i18n="accueil.formules.aide">Les prix sont proposés et validés par l'administration. Le module s'ouvre après confirmation du paiement.</p>
+      <div class="grille" id="formules"></div>
+      <div id="bloc-demande">
+        <div class="formulaire">
+          <label><span data-i18n="accueil.formule">Formule</span>
+            <select id="d-formule"></select>
+          </label>
+          <label><span data-i18n="accueil.moyen">Moyen de paiement</span>
+            <select id="d-moyen">
+              <option value="Bankily">Bankily</option>
+              <option value="Masrivi">Masrivi</option>
+            </select>
+          </label>
+          <label><span data-i18n="accueil.reference">Référence du paiement</span>
+            <input id="d-reference" maxlength="80" data-i18n-ph="accueil.reference.ph" placeholder="ex. BK-123456">
+          </label>
+          <button class="btn" id="d-envoyer" data-i18n="accueil.demander">Demander l'activation</button>
+        </div>
+        <p class="sub" style="margin-top:10px" data-i18n="paiement.indisponibles">Paiement disponible pour l'instant : Bankily et Masrivi uniquement. Espèces, virement et autres moyens sont indisponibles pour le moment.</p>
+        <div class="msg" id="d-msg"></div>
+      </div>
+    </div>
+    <div class="carte">
+      <h2 data-i18n="paiement.titre">Comment payer</h2>
+      <p class="sub" data-i18n="paiement.aide">Payez le montant de la formule choisie sur le numéro ci-dessous, puis saisissez le moyen et la référence de paiement dans le formulaire. L'administration vérifie le paiement avant d'activer votre accès.</p>
+      <div class="grille" id="coordonnees"></div>
+    </div>
+    <div class="carte">
+      <h2 data-i18n="accueil.mesdemandes">Mes demandes</h2>
+      <div class="table-defil" id="demandes"></div>
+    </div>
+  </section>
+
+  <!-- CAISSE -->
+  <section id="s-caisse">
+    <div class="carte">
+      <h2 data-i18n="caisse.journee">Journée</h2>
+      <div class="formulaire">
+        <label><span data-i18n="champ.date">Date</span>
+          <input type="date" id="c-date">
+        </label>
+        <button class="btn secondaire" id="c-charger" data-i18n="caisse.afficher">Afficher cette date</button>
+      </div>
+      <div class="msg" id="c-msg"></div>
+      <div id="c-ouverture" style="display:none">
+        <h3 data-i18n="caisse.ouvrir">Ouvrir la journée</h3>
+        <p class="sub" data-i18n="caisse.ouvrir.aide">Saisissez le matin l'argent physique disponible et le solde Wave disponible. Ces montants ne seront pas écrasés par les opérations suivantes.</p>
+        <div class="formulaire">
+          <label><span data-i18n="caisse.physique">Caisse physique (FCFA)</span>
+            <input type="number" id="c-caisse-init" min="0" step="1" inputmode="numeric">
+          </label>
+          <label><span data-i18n="caisse.wave">Solde Wave (FCFA)</span>
+            <input type="number" id="c-elec-init" min="0" step="1" inputmode="numeric">
+          </label>
+          <button class="btn" id="c-ouvrir" data-i18n="caisse.ouvrir.bouton">Ouvrir la journée</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="c-journee" style="display:none">
+      <div class="sub" style="margin-bottom:8px"><button class="btn" id="u-bascule" type="button"></button></div>
+      <div class="grille" id="c-stats"></div>
+      <div class="grille" id="c-bilan"></div>
+      <div class="carte">
+        <h2 data-i18n="op.nouvelle">Nouvelle opération</h2>
+        <div class="formulaire">
+          <label><span data-i18n="op.type">Type</span>
+            <select id="o-type">
+              <option value="depot" data-i18n="op.depot">Dépôt (le client donne des espèces, reçoit du Wave)</option>
+              <option value="retrait" data-i18n="op.retrait">Retrait (le client donne du Wave, reçoit des espèces)</option>
+              <option value="appro_especes" data-i18n="op.appro_especes">Approvisionnement en espèces</option>
+              <option value="appro_wave" data-i18n="op.appro_wave">Approvisionnement Wave</option>
+              <option value="depense" data-i18n="op.depense">Dépense de l'agence (en MRU)</option>
+              <option value="transfert_sortant" data-i18n="op.transfert_sortant">Transfert Wave sortant</option>
+              <option value="autre_revenu" data-i18n="op.autre_revenu">Autre revenu de l'agence (en MRU)</option>
+              <option value="autre_charge" data-i18n="op.autre_charge">Autre charge de l'agence (en MRU)</option>
+              <option value="ajustement_caisse" data-i18n="op.ajust_caisse">Ajustement de caisse</option>
+              <option value="ajustement_electronique" data-i18n="op.ajust_wave">Ajustement du solde Wave</option>
+            </select>
+          </label>
+          <label><span id="o-montant-label" data-i18n="op.montant_xof">Montant (FCFA)</span>
+            <input type="number" id="o-montant" step="1" inputmode="decimal" data-i18n-ph="op.montant.ph" placeholder="ex. 50000">
+            <small id="o-equiv" class="sub"></small>
+          </label>
+          <label><span data-i18n="op.client_nom">Nom du client (facultatif)</span>
+            <input id="o-client-nom" maxlength="120" data-i18n-ph="facultatif" placeholder="facultatif">
+          </label>
+          <label><span data-i18n="op.client_tel">Téléphone du client (facultatif)</span>
+            <input id="o-client-tel" maxlength="40" inputmode="tel" data-i18n-ph="facultatif" placeholder="facultatif">
+          </label>
+          <p class="sub" id="o-frais-aide" style="margin:0"></p>
+          <label><span data-i18n="op.reference">Référence</span>
+            <input id="o-reference" maxlength="80" data-i18n-ph="facultatif" placeholder="facultatif">
+          </label>
+          <label><span data-i18n="op.observation">Observation</span>
+            <input id="o-observation" maxlength="200" data-i18n-ph="facultatif" placeholder="facultatif">
+          </label>
+          <label id="o-motif-bloc" style="display:none"><span data-i18n="op.motif">Motif (obligatoire pour un ajustement)</span>
+            <input id="o-motif" maxlength="200">
+          </label>
+          <button class="btn" id="o-enregistrer" data-i18n="op.enregistrer">Enregistrer</button>
+        </div>
+        <div class="sub" id="o-aide" style="margin-top:10px"></div>
+        <div class="msg" id="o-msg"></div>
+      </div>
+
+      <div class="carte">
+        <h2 data-i18n="op.liste">Opérations de la journée</h2>
+        <div class="table-defil" id="c-operations"></div>
+      </div>
+
+      <div class="carte" id="carte-cloture">
+        <h2 data-i18n="cloture.titre">Clôture de la journée</h2>
+        <p class="sub" data-i18n="cloture.aide">Comptez l'argent réellement présent et, si vous pouvez, vérifiez le solde Wave. L'écart est affiché et conservé, rien n'est corrigé automatiquement.</p>
+        <div class="formulaire">
+          <label><span data-i18n="cloture.caisse">Caisse comptée (MRU)</span>
+            <input type="number" id="k-caisse" min="0" step="0.01" inputmode="decimal">
+          </label>
+          <label><span data-i18n="cloture.wave">Solde Wave vérifié (FCFA, facultatif)</span>
+            <input type="number" id="k-elec" min="0" step="1" inputmode="numeric">
+          </label>
+          <button class="btn" id="k-cloturer" data-i18n="cloture.bouton">Clôturer la journée</button>
+        </div>
+        <div class="msg" id="k-msg"></div>
+        <div id="k-resultat"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONVERTISSEUR -->
+  <section id="s-convertisseur">
+    <div class="carte">
+      <h2 data-i18n="conv.titre">Conversion FCFA / MRU</h2>
+      <p class="sub" id="conv-taux">…</p>
+      <div class="formulaire">
+        <label><span data-i18n="conv.mode">Opération</span>
+          <select id="conv-mode">
+            <option value="depot" data-i18n="conv.mode.depot">Dépôt</option>
+            <option value="retrait" data-i18n="conv.mode.retrait">Retrait</option>
+          </select>
+        </label>
+        <label>FCFA <input type="number" id="conv-fcfa" min="0" step="1" inputmode="numeric"></label>
+        <label>MRU <input type="number" id="conv-mru" min="0" step="0.01" inputmode="decimal"></label>
+      </div>
+      <p class="sub" id="conv-mro" style="margin-top:8px"></p>
+      <p class="sub" style="margin-top:12px" data-i18n="conv.aide">La conversion est informative : elle ne modifie aucun solde. Chaque opération garde le taux du moment où elle a été saisie.</p>
+    </div>
+  </section>
+
+  <!-- HISTORIQUE -->
+  <section id="s-historique">
+    <div class="carte">
+      <h2 data-i18n="hist.titre">Rechercher dans l'historique</h2>
+      <div class="formulaire">
+        <label><span data-i18n="hist.du">Du</span> <input type="date" id="h-du"></label>
+        <label><span data-i18n="hist.au">Au</span> <input type="date" id="h-au"></label>
+        <label><span data-i18n="op.type">Type</span>
+          <select id="h-type">
+            <option value="" data-i18n="hist.tous">Tous</option>
+            <option value="depot" data-i18n="type.depot">Dépôt</option>
+            <option value="retrait" data-i18n="type.retrait">Retrait</option>
+            <option value="appro_especes" data-i18n="type.appro_especes">Appro. espèces</option>
+            <option value="appro_wave" data-i18n="type.appro_wave">Appro. Wave</option>
+            <option value="depense" data-i18n="type.depense">Dépense</option>
+            <option value="transfert_sortant" data-i18n="type.transfert_sortant">Transfert sortant</option>
+            <option value="autre_revenu" data-i18n="type.autre_revenu">Autre revenu</option>
+            <option value="autre_charge" data-i18n="type.autre_charge">Autre charge</option>
+            <option value="ajustement_caisse" data-i18n="type.ajust_caisse">Ajustement caisse</option>
+            <option value="ajustement_electronique" data-i18n="type.ajust_wave">Ajustement Wave</option>
+          </select>
+        </label>
+        <label><span data-i18n="hist.min">Montant minimum</span> <input type="number" id="h-min" min="0" step="1"></label>
+        <label><span data-i18n="hist.max">Montant maximum</span> <input type="number" id="h-max" min="0" step="1"></label>
+        <label><span data-i18n="op.reference">Référence</span> <input id="h-ref" maxlength="80"></label>
+        <button class="btn" id="h-chercher" data-i18n="hist.chercher">Rechercher</button>
+      </div>
+      <div class="table-defil" id="h-resultat" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- RAPPORTS -->
+  <section id="s-rapports">
+    <div class="carte">
+      <h2 data-i18n="rap.jour">Rapport journalier</h2>
+      <div class="formulaire">
+        <label><span data-i18n="champ.date">Date</span> <input type="date" id="r-jour"></label>
+        <button class="btn" id="r-jour-voir" data-i18n="rap.voir">Voir</button>
+      </div>
+      <div id="r-jour-resultat"></div>
+    </div>
+    <div class="carte">
+      <h2 data-i18n="rap.mois">Rapport mensuel</h2>
+      <div class="formulaire">
+        <label><span data-i18n="rap.mois.champ">Mois</span> <input type="month" id="r-mois"></label>
+        <button class="btn" id="r-mois-voir" data-i18n="rap.voir">Voir</button>
+      </div>
+      <div id="r-mois-resultat"></div>
+    </div>
+    <div class="carte">
+      <h2 data-i18n="rap.periode">Journées de la période</h2>
+      <div class="formulaire">
+        <label><span data-i18n="hist.du">Du</span> <input type="date" id="r-du"></label>
+        <label><span data-i18n="hist.au">Au</span> <input type="date" id="r-au"></label>
+        <button class="btn" id="r-periode-voir" data-i18n="rap.voir">Voir</button>
+      </div>
+      <div class="table-defil" id="r-periode-resultat" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+
+  <!-- JOURNAL -->
+  <section id="s-journal">
+    <div class="carte">
+      <h2 data-i18n="journal.titre">Journal d'activité</h2>
+      <p class="sub" data-i18n="journal.aide">Chaque action est conservée. Le journal ne peut pas être modifié.</p>
+      <div class="table-defil" id="j-liste" style="margin-top:10px"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+/* ══════════ TEXTES ══════════
+   Une seule source pour le français et l'arabe. Pour ajouter une langue,
+   copier le bloc « fr » et traduire les valeurs. Les clés absentes en arabe
+   retombent sur le français. */
+const TEXTES = {
+  fr: {
+    "titre": "Gestion d'agence Wave Sénégal",
+    "onglet.accueil": "Accueil", "onglet.caisse": "Caisse du jour", "onglet.convertisseur": "FCFA / MRU",
+    "onglet.historique": "Historique", "onglet.rapports": "Rapports", "onglet.journal": "Journal", "session.deconnexion": "Se déconnecter",
+    "chargement": "Chargement…", "champ.date": "Date", "facultatif": "facultatif",
+    "accueil.formules": "Formules", "accueil.formules.aide": "Les prix sont proposés et validés par l'administration. Le module s'ouvre après confirmation du paiement.",
+    "accueil.formule": "Formule", "accueil.moyen": "Moyen de paiement", "accueil.reference": "Référence du paiement",
+    "accueil.reference.ph": "ex. BK-123456", "accueil.demander": "Demander l'activation", "accueil.mesdemandes": "Mes demandes",
+    "moyen.especes": "Espèces", "moyen.virement": "Virement",
+    "compte.actif": "Module actif.", "compte.sans_echeance": "Licence sans échéance.", "compte.echeance": "Échéance : {date}.",
+    "compte.inactif": "Module non actif.", "compte.valable": "valable jusqu'au {date}", "compte.sans_echeance_courte": "sans échéance",
+    "compte.sans_formule": "Aucune formule n'est active. Choisissez une formule ci-dessous et envoyez votre demande.",
+    "compte.en_attente": "Votre demande est en attente de validation par l'administration. Le module s'ouvrira après confirmation du paiement.",
+    "compte.expire": "Votre formule est arrivée à échéance. Demandez son renouvellement ci-dessous.",
+    "formule.mensuel": "Mensuel", "formule.annuel": "Annuel", "formule.licence": "Licence",
+    "formule.jours": "{n} jours", "formule.tarif_valide": "tarif validé", "formule.tarif_propose": "tarif proposé",
+    "demande.secondaire": "Seul le compte direction peut demander une activation.",
+    "demande.fermee": "La demande d'activation n'est pas encore ouverte. Le fondateur l'ouvrira après validation.",
+    "demande.en_cours": "Une demande est déjà en attente.",
+    "demande.envoyee": "Demande envoyée. Elle sera traitée par l'administration après vérification du paiement.",
+    "demande.vide": "Aucune demande pour l'instant.",
+    "statut.attente": "En attente", "statut.validee": "Validée", "statut.refusee": "Refusée",
+    "tab.date": "Date", "tab.formule": "Formule", "tab.montant": "Montant", "tab.moyen": "Moyen", "tab.reference": "Référence", "tab.statut": "Statut",
+    "tab.heure": "Heure", "tab.type": "Type", "tab.frais": "Frais", "tab.observation": "Observation", "tab.nom": "Nom", "tab.role": "Rôle",
+    "tab.compte": "Compte", "tab.acces": "Accès au module", "tab.qui": "Qui", "tab.action": "Action", "tab.detail": "Détail",
+    "tab.caisse_fin": "Caisse fin", "tab.wave_fin": "Solde Wave fin", "tab.depots": "Dépôts", "tab.retraits": "Retraits", "tab.ecart_caisse": "Écart caisse",
+    "caisse.journee": "Journée", "caisse.afficher": "Afficher cette date",
+    "caisse.ouvrir": "Ouvrir la journée", "caisse.ouvrir.aide": "Saisissez le matin l'argent physique disponible et le solde Wave disponible. Ces montants ne seront pas écrasés par les opérations suivantes.",
+    "caisse.physique": "Caisse physique (FCFA)", "caisse.wave": "Solde Wave (FCFA)", "caisse.ouvrir.bouton": "Ouvrir la journée",
+    "caisse.theorique": "Caisse physique (théorique)", "caisse.wave_theorique": "Solde Wave (théorique)", "caisse.depart": "départ {v}",
+    "caisse.frais": "Frais (rubrique à part)", "caisse.frais.aide": "n'entrent dans aucun solde",
+    "caisse.cloturee": "Cette journée est clôturée : aucune opération n'est possible.",
+    "op.nouvelle": "Nouvelle opération", "op.type": "Type", "op.depot": "Dépôt (le client donne des espèces, reçoit du Wave)",
+    "op.retrait": "Retrait (le client donne du Wave, reçoit des espèces)", "op.appro_especes": "Approvisionnement en espèces",
+    "op.appro_wave": "Approvisionnement Wave", "op.ajust_caisse": "Ajustement de caisse", "op.ajust_wave": "Ajustement du solde Wave",
+    "op.montant": "Montant (FCFA)", "op.montant.ph": "ex. 50000", "op.frais": "Frais (FCFA)", "op.reference": "Référence",
+    "op.observation": "Observation", "op.motif": "Motif (obligatoire pour un ajustement)", "op.enregistrer": "Enregistrer",
+    "op.depense": "Dépense de l'agence (en MRU)", "op.transfert_sortant": "Transfert Wave sortant",
+    "op.montant_xof": "Montant (FCFA)", "op.montant_mru": "Montant (MRU, deux décimales maximum)",
+    "op.montant_mru_invalide": "Un montant en MRU comporte deux décimales au maximum.",
+    "op.aide_taux": "Taux en vigueur : 1 FCFA = {v} MRU. Le dépôt ou le retrait est converti à ce taux, enregistré avec l'opération.",
+    "op.taux_requis": "Aucun taux FCFA → MRU n'est en vigueur : l'administration doit le saisir avant tout dépôt ou retrait.",
+    "op.equiv": "Équivalent : {v}",
+    "type.depense": "Dépense", "type.transfert_sortant": "Transfert sortant",
+    "unite.voir_mro": "Afficher en MRO (1 MRU = 10 MRO)", "unite.voir_mru": "Afficher en MRU",
+    "op.liste": "Opérations de la journée", "op.aide_ajust": "Un ajustement corrige la caisse ou le solde Wave. Il est motivé, daté et attribué à son auteur.",
+    "op.montant_invalide": "Saisissez un montant entier en FCFA.", "op.enregistree": "Opération enregistrée.",
+    "op.annuler": "Annuler", "op.annulee": "Annulée : {motif}", "op.vide": "Aucune opération pour cette journée.",
+    "op.motif_annulation": "Motif de l'annulation (obligatoire) :", "op.annulation_motivee": "Une annulation doit être motivée.",
+    "cloture.titre": "Clôture de la journée", "cloture.aide": "Comptez l'argent réellement présent et, si vous pouvez, vérifiez le solde Wave. L'écart est affiché et conservé, rien n'est corrigé automatiquement.",
+    "cloture.caisse": "Caisse comptée (MRU)", "cloture.wave": "Solde Wave vérifié (FCFA, facultatif)", "cloture.bouton": "Clôturer la journée",
+    "cloture.saisir": "Saisissez la caisse comptée.", "cloture.confirm": "Clôturer cette journée ? Elle ne pourra plus être modifiée par les opérations ordinaires.",
+    "cloture.ecart_caisse": "Écart de caisse", "cloture.ecart_wave": "Écart du solde Wave", "cloture.non_verifie": "non vérifié",
+    "cloture.ok": "Clôture enregistrée. Les écarts sont conservés dans le récapitulatif.", "cloture.faite": "Journée clôturée.",
+    "conv.titre": "Conversion FCFA / MRU", "conv.taux": "Taux en vigueur : {f} FCFA = {v} (saisi le {date}).",
+    "conv.mode": "Opération", "conv.mode.depot": "Dépôt", "conv.mode.retrait": "Retrait", "conv.mro": "Soit {v} MRO (1 MRU = 10 MRO).",
+    "op.client_nom": "Nom du client (facultatif)", "op.client_tel": "Téléphone du client (facultatif)",
+    "op.frais_aide": "Frais Wave calculés à 1 % : {frais} FCFA, {payeur}. Total débité ou crédité : {total} FCFA.",
+    "op.frais_payeur.client": "payés par le client", "op.frais_payeur.agence": "supportés par l'agence",
+    "op.autre_revenu": "Autre revenu de l'agence (en MRU)", "op.autre_charge": "Autre charge de l'agence (en MRU)",
+    "type.autre_revenu": "Autre revenu", "type.autre_charge": "Autre charge",
+    "bilan.revenus": "Revenus de l'agence", "bilan.charges": "Charges de l'agence", "bilan.benefice": "Bénéfice net",
+    "bilan.detail_rev": "Commissions {c} · autres revenus {a}", "bilan.detail_ch": "Frais Wave à charge {f} · dépenses {d}",
+    "bilan.aide": "Dépôts et retraits ne sont pas des bénéfices. Écarts de caisse affichés à part.",
+    "bilan.etat.benefice": "Bénéfice", "bilan.etat.perte": "Perte", "bilan.etat.equilibre": "Équilibre",
+    "conv.pas_taux": "Aucun taux n'a encore été saisi par l'administration. La conversion n'est pas disponible.",
+    "conv.aide": "La conversion est informative : elle ne modifie aucun solde. Chaque opération garde le taux du moment où elle a été saisie.",
+    "hist.titre": "Rechercher dans l'historique", "hist.du": "Du", "hist.au": "Au", "hist.tous": "Tous",
+    "hist.min": "Montant minimum", "hist.max": "Montant maximum", "hist.chercher": "Rechercher",
+    "hist.vide": "Aucune opération ne correspond à cette recherche.", "hist.annulee": "annulée", "hist.validee": "validée",
+    "type.depot": "Dépôt", "type.retrait": "Retrait", "type.appro_especes": "Appro. espèces", "type.appro_wave": "Appro. Wave",
+    "type.ajust_caisse": "Ajustement caisse", "type.ajust_wave": "Ajustement Wave",
+    "rap.jour": "Rapport journalier", "rap.mois": "Rapport mensuel", "rap.mois.champ": "Mois", "rap.periode": "Journées de la période", "rap.voir": "Voir",
+    "rap.caisse": "Caisse physique : départ → fin", "rap.wave": "Solde Wave : départ → fin", "rap.especes": "Entrées / sorties en espèces",
+    "rap.wave_flux": "Entrées / sorties Wave", "rap.frais": "Frais (à part)", "rap.aucune_journee": "Aucune journée sur cette période.",
+    "rap.non_cloturee": "non clôturée",
+    "acces.titre": "Comptes autorisés", "acces.aide": "Seuls les comptes que vous cochez peuvent utiliser le module. Le compte direction a toujours accès.",
+    "acces.vide": "Aucun compte secondaire pour l'instant.", "acces.ok": "Accès mis à jour.", "acces.actif": "actif", "acces.desactive": "désactivé",
+    "acces.autorise": "autorisé",
+    "journal.titre": "Journal d'activité", "journal.aide": "Chaque action est conservée. Le journal ne peut pas être modifié.", "journal.vide": "Le journal est vide.",
+    "erreur.session": "Session expirée.",
+    "paiement.titre": "Comment payer", "paiement.aide": "Payez le montant de la formule choisie sur le numéro ci-dessous, puis saisissez le moyen et la référence de paiement dans le formulaire. L'administration vérifie le paiement avant d'activer votre accès.",
+    "paiement.indisponibles": "Paiement disponible pour l'instant : Bankily et Masrivi uniquement. Espèces, virement et autres moyens sont indisponibles pour le moment.",
+    "paiement.a_venir": "à communiquer",
+  },
+  ar: {
+    "titre": "إدارة وكالة واف Wave السنغال",
+    "onglet.accueil": "الرئيسية", "onglet.caisse": "صندوق اليوم", "onglet.convertisseur": "أوقية / أوقية موريتانية",
+    "onglet.historique": "السجل", "onglet.rapports": "التقارير", "onglet.journal": "اليوميات", "session.deconnexion": "تسجيل الخروج",
+    "chargement": "جارٍ التحميل…", "champ.date": "التاريخ", "facultatif": "اختياري",
+    "accueil.formules": "الباقات", "accueil.formules.aide": "تقترح الإدارة الأسعار وتصادق عليها. يُفتح الموديول بعد تأكيد الدفع.",
+    "accueil.formule": "الباقة", "accueil.moyen": "طريقة الدفع", "accueil.reference": "مرجع الدفع",
+    "accueil.reference.ph": "مثال: BK-123456", "accueil.demander": "طلب التفعيل", "accueil.mesdemandes": "طلباتي",
+    "moyen.especes": "نقداً", "moyen.virement": "تحويل",
+    "compte.actif": "الموديول مفعّل.", "compte.sans_echeance": "رخصة بلا تاريخ انتهاء.", "compte.echeance": "تاريخ الانتهاء: {date}.",
+    "compte.inactif": "الموديول غير مفعّل.", "compte.valable": "صالح حتى {date}", "compte.sans_echeance_courte": "بلا تاريخ انتهاء",
+    "compte.sans_formule": "لا توجد باقة مفعّلة. اختر باقة أدناه وأرسل طلبك.",
+    "compte.en_attente": "طلبك بانتظار مصادقة الإدارة. سيُفتح الموديول بعد تأكيد الدفع.",
+    "compte.expire": "انتهت صلاحية باقتك. اطلب تجديدها أدناه.",
+    "formule.mensuel": "شهرية", "formule.annuel": "سنوية", "formule.licence": "رخصة",
+    "formule.jours": "{n} يوماً", "formule.tarif_valide": "سعر مصادق عليه", "formule.tarif_propose": "سعر مقترح",
+    "demande.secondaire": "المدير وحده يمكنه طلب التفعيل.",
+    "demande.fermee": "لم يُفتح طلب التفعيل بعد. يفتحه المؤسس بعد المصادقة.",
+    "demande.en_cours": "يوجد طلب بانتظار المعالجة.",
+    "demande.envoyee": "تم إرسال الطلب. ستعالجه الإدارة بعد التحقق من الدفع.",
+    "demande.vide": "لا توجد طلبات حتى الآن.",
+    "statut.attente": "بانتظار", "statut.validee": "مقبول", "statut.refusee": "مرفوض",
+    "tab.date": "التاريخ", "tab.formule": "الباقة", "tab.montant": "المبلغ", "tab.moyen": "الطريقة", "tab.reference": "المرجع", "tab.statut": "الحالة",
+    "tab.heure": "الساعة", "tab.type": "النوع", "tab.frais": "الرسوم", "tab.observation": "ملاحظة", "tab.nom": "الاسم", "tab.role": "الدور",
+    "tab.compte": "الحساب", "tab.acces": "الوصول إلى الموديول", "tab.qui": "من", "tab.action": "الإجراء", "tab.detail": "التفاصيل",
+    "tab.caisse_fin": "الصندوق عند النهاية", "tab.wave_fin": "رصيد واف عند النهاية", "tab.depots": "الإيداعات", "tab.retraits": "السحوبات", "tab.ecart_caisse": "فرق الصندوق",
+    "caisse.journee": "اليوم", "caisse.afficher": "عرض هذا التاريخ",
+    "caisse.ouvrir": "فتح اليوم", "caisse.ouvrir.aide": "أدخل صباحاً المبلغ النقدي المتوفر والرصيد المتاح في واف. لن تُمحى هذه المبالغ بالعمليات اللاحقة.",
+    "caisse.physique": "الصندوق النقدي (أوقية)", "caisse.wave": "رصيد واف (أوقية)", "caisse.ouvrir.bouton": "فتح اليوم",
+    "caisse.theorique": "الصندوق النقدي (نظري)", "caisse.wave_theorique": "رصيد واف (نظري)", "caisse.depart": "البداية {v}",
+    "caisse.frais": "الرسوم (بند منفصل)", "caisse.frais.aide": "لا تدخل في أي رصيد",
+    "caisse.cloturee": "هذا اليوم مغلق: لا يمكن تسجيل أي عملية.",
+    "op.nouvelle": "عملية جديدة", "op.type": "النوع", "op.depot": "إيداع (يسلم الزبون نقداً ويتسلم واف)",
+    "op.retrait": "سحب (يسلم الزبون واف ويتسلم نقداً)", "op.appro_especes": "تزويد نقدي",
+    "op.appro_wave": "تزويد واف", "op.ajust_caisse": "تعديل الصندوق", "op.ajust_wave": "تعديل رصيد واف",
+    "op.montant": "المبلغ (أوقية)", "op.montant.ph": "مثال: 50000", "op.frais": "الرسوم (أوقية)", "op.reference": "المرجع",
+    "op.observation": "ملاحظة", "op.motif": "السبب (إلزامي للتعديل)", "op.enregistrer": "تسجيل",
+    "op.depense": "مصروف الوكالة (بالأوقية الموريتانية)", "op.transfert_sortant": "تحويل واف صادر",
+    "op.montant_xof": "المبلغ (فرنك CFA)", "op.montant_mru": "المبلغ (أوقية موريتانية، رقمان عشريان كحد أقصى)",
+    "op.montant_mru_invalide": "المبلغ بالأوقية الموريتانية يحتوي على رقمين عشريين كحد أقصى.",
+    "op.aide_taux": "السعر الجاري: 1 فرنك CFA = {v} أوقية موريتانية. يُحوَّل الإيداع أو السحب بهذا السعر ويُسجَّل مع العملية.",
+    "op.taux_requis": "لا يوجد سعر تحويل جارٍ: يجب أن تُدخل الإدارة السعر قبل أي إيداع أو سحب.",
+    "op.equiv": "المعادل: {v}",
+    "type.depense": "مصروف", "type.transfert_sortant": "تحويل صادر",
+    "unite.voir_mro": "عرض بالأوقية القديمة (1 أوقية = 10 قديمة)", "unite.voir_mru": "عرض بالأوقية الموريتانية",
+    "op.liste": "عمليات اليوم", "op.aide_ajust": "التعديل يصحح الصندوق أو رصيد واف. يجب تعليله، ويُؤرَّخ وينسب إلى صاحبه.",
+    "op.montant_invalide": "أدخل مبلغاً صحيحاً بالأوقية.", "op.enregistree": "تم تسجيل العملية.",
+    "op.annuler": "إلغاء", "op.annulee": "ملغاة: {motif}", "op.vide": "لا توجد عمليات في هذا اليوم.",
+    "op.motif_annulation": "سبب الإلغاء (إلزامي):", "op.annulation_motivee": "يجب تعليل الإلغاء.",
+    "cloture.titre": "إغلاق اليوم", "cloture.aide": "أحصِ المبلغ الموجود فعلاً، وإن أمكن تحقّق من رصيد واف. يُعرض الفرق ويُحفظ، ولا يُصحَّح تلقائياً.",
+    "cloture.caisse": "الصندوق المعدود (أوقية)", "cloture.wave": "رصيد واف المتحقق منه (أوقية، اختياري)", "cloture.bouton": "إغلاق اليوم",
+    "cloture.saisir": "أدخل المبلغ المعدود في الصندوق.", "cloture.confirm": "إغلاق هذا اليوم؟ لن تُعدَّل بعده العمليات العادية.",
+    "cloture.ecart_caisse": "فرق الصندوق", "cloture.ecart_wave": "فرق رصيد واف", "cloture.non_verifie": "غير متحقق منه",
+    "cloture.ok": "تم حفظ الإغلاق. تُحفظ الفروق في الملخص.", "cloture.faite": "تم إغلاق اليوم.",
+    "conv.titre": "تحويل أوقية / أوقية موريتانية", "conv.taux": "السعر الجاري: {f} فرنك CFA = {v} (أُدخل بتاريخ {date}).",
+    "conv.mode": "العملية", "conv.mode.depot": "إيداع", "conv.mode.retrait": "سحب", "conv.mro": "أي {v} قديمة (1 أوقية = 10 قديمة).",
+    "op.client_nom": "اسم الزبون (اختياري)", "op.client_tel": "هاتف الزبون (اختياري)",
+    "op.frais_aide": "رسوم واف المحسوبة بنسبة 1 %: {frais} فرنك CFA، {payeur}. المجموع المخصوم أو المضاف: {total} فرنك CFA.",
+    "op.frais_payeur.client": "يدفعها الزبون", "op.frais_payeur.agence": "تتحملها الوكالة",
+    "op.autre_revenu": "دخل آخر للوكالة (بالأوقية الموريتانية)", "op.autre_charge": "مصروف آخر للوكالة (بالأوقية الموريتانية)",
+    "type.autre_revenu": "دخل آخر", "type.autre_charge": "مصروف آخر",
+    "bilan.revenus": "دخل الوكالة", "bilan.charges": "أعباء الوكالة", "bilan.benefice": "صافي الربح",
+    "bilan.detail_rev": "العمولات {c} · دخل آخر {a}", "bilan.detail_ch": "رسوم واف على الوكالة {f} · مصروفات {d}",
+    "bilan.aide": "الإيداع والسحب ليسا ربحاً. فروق الصندوق تظهر منفصلة.",
+    "bilan.etat.benefice": "ربح", "bilan.etat.perte": "خسارة", "bilan.etat.equilibre": "توازن",
+    "conv.pas_taux": "لم تُدخل الإدارة سعر صرف بعد. التحويل غير متاح.",
+    "conv.aide": "التحويل إرشادي: لا يعدّل أي رصيد. تحتفظ كل عملية بالسعر الذي أُدخلت به.",
+    "hist.titre": "البحث في السجل", "hist.du": "من", "hist.au": "إلى", "hist.tous": "الكل",
+    "hist.min": "الحد الأدنى للمبلغ", "hist.max": "الحد الأقصى للمبلغ", "hist.chercher": "بحث",
+    "hist.vide": "لا توجد عملية تطابق هذا البحث.", "hist.annulee": "ملغاة", "hist.validee": "صحيحة",
+    "type.depot": "إيداع", "type.retrait": "سحب", "type.appro_especes": "تزويد نقدي", "type.appro_wave": "تزويد واف",
+    "type.ajust_caisse": "تعديل الصندوق", "type.ajust_wave": "تعديل واف",
+    "rap.jour": "تقرير يومي", "rap.mois": "تقرير شهري", "rap.mois.champ": "الشهر", "rap.periode": "أيام الفترة", "rap.voir": "عرض",
+    "rap.caisse": "الصندوق النقدي: البداية ← النهاية", "rap.wave": "رصيد واف: البداية ← النهاية", "rap.especes": "داخل / خارج نقداً",
+    "rap.wave_flux": "داخل / خارج واف", "rap.frais": "الرسوم (منفصلة)", "rap.aucune_journee": "لا يوجد يوم في هذه الفترة.",
+    "rap.non_cloturee": "غير مغلق",
+    "acces.titre": "الحسابات المصرّح لها", "acces.aide": "لا يستطيع استخدام الموديول إلا الحسابات التي تحددها. حساب المدير له دائماً الوصول.",
+    "acces.vide": "لا توجد حسابات فرعية حتى الآن.", "acces.ok": "تم تحديث الصلاحيات.", "acces.actif": "نشط", "acces.desactive": "معطّل",
+    "acces.autorise": "مصرّح",
+    "journal.titre": "سجل النشاط", "journal.aide": "تُحفظ كل عملية. لا يمكن تعديل السجل.", "journal.vide": "السجل فارغ.",
+    "erreur.session": "انتهت الجلسة.",
+    "paiement.titre": "طريقة الدفع", "paiement.aide": "ادفع مبلغ الباقة المختارة على الرقم أدناه، ثم أدخل طريقة الدفع ومرجعه في النموذج. تتحقق الإدارة من الدفع قبل تفعيل وصولك.",
+    "paiement.indisponibles": "الدفع متاح حالياً عبر بنكيلي (Bankily) وماسريفي (Masrivi) فقط. النقد والتحويل وغيرهما غير متاحين حالياً.",
+    "paiement.a_venir": "سيُبلَّغ لاحقاً",
+  },
+};
+
+let langue = "fr";
+try { const s = localStorage.getItem("wave-langue"); if (s === "ar" || s === "fr") langue = s; } catch { /* navigation privée */ }
+
+/* t("clé", {v: …}) : traduit et remplace {v} par la valeur. Repli sur le français. */
+function t(cle, remplacements) {
+  let texte = (TEXTES[langue] && TEXTES[langue][cle]) || TEXTES.fr[cle] || cle;
+  if (remplacements) for (const k in remplacements) texte = texte.replace("{" + k + "}", remplacements[k]);
+  return texte;
+}
+
+/* Applique la langue à toute la page : textes, placeholders, sens de lecture. */
+function appliquerLangue() {
+  document.documentElement.lang = langue;
+  document.documentElement.dir = langue === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => (el.placeholder = t(el.dataset.i18nPh)));
+  document.querySelectorAll("[data-langue]").forEach((b) => b.classList.toggle("actif", b.dataset.langue === langue));
+  document.title = langue === "ar" ? "نجاح — إدارة وكالة واف" : "Najah — Gestion d'agence Wave Sénégal";
+}
+
+document.querySelector(".langue").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button[data-langue]");
+  if (!b) return;
+  langue = b.dataset.langue;
+  try { localStorage.setItem("wave-langue", langue); } catch { /* ignoré */ }
+  appliquerLangue();
+  rafraichir();
+});
+
+/* ── Utilitaires ─────────────────────────────────────────────── */
+const nf = new Intl.NumberFormat("fr-FR");
+/* Affichage : FCFA entiers pour le solde Wave, MRU à deux décimales pour la caisse.
+   La bascule MRO ne change que l'affichage (1 MRU = 10 MRO), jamais les calculs. */
+let afficherMro = false;
+try { afficherMro = localStorage.getItem("wave_mro") === "1"; } catch { /* navigation privée : on reste en MRU */ }
+function fmt(n) { return n === null || n === undefined || n === "" ? "—" : '<span class="nombre">' + nf.format(Math.round(Number(n))) + "</span> " + (langue === "ar" ? "فرنك CFA" : "FCFA"); }
+function fmtMru(n) {
+  if (n === null || n === undefined || n === "") return "—";
+  const valeur = afficherMro ? Math.round(Number(n) * 10 * 100) / 100 : Number(n);
+  const unite = afficherMro ? (langue === "ar" ? "أوقية قديمة (MRO)" : "MRO") : (langue === "ar" ? "أوقية موريتانية" : "MRU");
+  return '<span class="nombre">' + new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(valeur) + "</span> " + unite;
+}
+function texte(html) { return String(html).replace(/<[^>]+>/g, ""); }
+function uniteType(c) { return ({ depot: "XOF", retrait: "XOF", appro_especes: "MRU", appro_wave: "XOF", depense: "MRU", transfert_sortant: "XOF", ajustement_caisse: "MRU", ajustement_electronique: "XOF" })[c] || "XOF"; }
+function montantAff(o) { return (o.unite || uniteType(o.type)) === "MRU" ? fmtMru(o.montant) : fmt(o.montant); }
+function echap(s) { return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function aujourdhui() { return new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Dakar" }); }
+function locale() { return langue === "ar" ? "ar" : "fr-FR"; }
+function dateCourte(iso) { if (!iso) return "—"; const d = new Date(iso); return isNaN(d) ? "—" : d.toLocaleDateString(locale(), { timeZone: "Africa/Dakar" }); }
+function heure(iso) { if (!iso) return ""; const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Dakar" }); }
+function montrer(id, texte, ok) { const el = document.getElementById(id); el.textContent = texte; el.className = "msg " + (ok ? "ok" : "ko"); }
+function cacher(id) { const el = document.getElementById(id); el.className = "msg"; el.textContent = ""; }
+function libelleType(c) { return t("type." + c) === "type." + c ? c : t("type." + c); }
+function libelleFormule(c) { return t("formule." + c) === "formule." + c ? c : t("formule." + c); }
+
+async function api(methode, chemin, corps) {
+  const r = await fetch("/api/wave" + chemin, {
+    method: methode, credentials: "same-origin",
+    headers: corps ? { "Content-Type": "application/json" } : {},
+    body: corps ? JSON.stringify(corps) : undefined,
+  });
+  if (r.status === 401) { window.location.href = "/wave-connexion.html"; throw new Error("session"); }
+  let j = null; try { j = await r.json(); } catch { /* sans corps */ }
+  if (!r.ok) { const e = new Error((j && j.error) || "Erreur " + r.status); e.code = j && j.code; e.motif = j && j.motif; e.statut = r.status; throw e; }
+  return j;
+}
+
+const etat = { actif: false, taux: null, formules: [], date: "", compte: null, demandes: [] };
+
+/* ── Onglets ─────────────────────────────────────────────────── */
+document.getElementById("onglets").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button[data-onglet]");
+  if (!b) return;
+  document.querySelectorAll("#onglets button").forEach((x) => x.classList.toggle("actif", x === b));
+  document.querySelectorAll("main > section").forEach((s) => s.classList.toggle("actif", s.id === "s-" + b.dataset.onglet));
+  if (b.dataset.onglet === "caisse") chargerJournee();
+  if (b.dataset.onglet === "journal") chargerJournal();
+});
+
+/* ── Déconnexion ─────────────────────────────────────────────── */
+document.getElementById("deconnexion").addEventListener("click", async () => {
+  await fetch("/api/wave/auth/deconnexion", { method: "POST", credentials: "same-origin" }).catch(() => {});
+  window.location.href = "/wave-connexion.html";
+});
+
+/* ── Accueil ─────────────────────────────────────────────────── */
+async function chargerEtat() {
+  const e = await api("GET", "/etat");
+  document.getElementById("nom-agence").textContent = e.agence.nomAgence + " · " + e.agence.nomResponsable;
+  etat.actif = e.compte.actif;
+  etat.taux = e.taux;
+  etat.parametres = e.parametres;
+  etat.formules = e.formules;
+  etat.compte = e.compte;
+  etat.demandes = e.demandes;
+  etat.ouverte = e.commercialisationOuverte === true;
+  rendreAccueil();
+}
+
+function rendreAccueil() {
+  const e = { compte: etat.compte, formules: etat.formules, demandes: etat.demandes, taux: etat.taux, commercialisationOuverte: etat.ouverte };
+  document.getElementById("sous-titre").textContent = e.compte.actif
+    ? (libelleFormule(e.compte.formule) + (e.compte.licenceSansEcheance ? " (" + t("compte.sans_echeance_courte") + ")" : " — " + t("compte.valable", { date: dateCourte(e.compte.dateExpiration) })))
+    : t("compte.inactif");
+  const b = document.getElementById("bandeau-compte");
+  if (e.compte.actif) {
+    b.className = "bandeau actif";
+    b.textContent = t("compte.actif") + " " + (e.compte.licenceSansEcheance ? t("compte.sans_echeance") : t("compte.echeance", { date: dateCourte(e.compte.dateExpiration) }));
+  } else {
+    b.className = "bandeau bloque";
+    const cles = { sans_formule: "compte.sans_formule", en_attente: "compte.en_attente", expire: "compte.expire" };
+    b.textContent = cles[e.compte.statut] ? t(cles[e.compte.statut]) : t("compte.inactif");
+  }
+  document.getElementById("formules").innerHTML = e.formules.map((f) => `
+    <div class="stat"><small>${echap(libelleFormule(f.cle))}</small><b>${fmtMru(f.montant)}</b>
+      <small>${f.dureeJours ? t("formule.jours", { n: f.dureeJours }) : t("compte.sans_echeance_courte")} · ${f.statutPrix === "valide" ? t("formule.tarif_valide") : t("formule.tarif_propose")}</small></div>`).join("");
+  const select = document.getElementById("d-formule");
+  const choisie = select.value;
+  select.innerHTML = e.formules.map((f) => `<option value="${echap(f.cle)}">${echap(libelleFormule(f.cle))} — ${nf.format(f.montant)} MRU</option>`).join("");
+  if (choisie) select.value = choisie;
+  const enAttente = e.demandes.some((d) => d.statut === "en_attente");
+  const ouverte = e.commercialisationOuverte;
+  const bloque = enAttente;
+  document.getElementById("d-envoyer").disabled = bloque;
+  document.querySelectorAll("#bloc-demande select,#bloc-demande input").forEach((x) => (x.disabled = bloque));
+  const avis = enAttente ? t("demande.en_cours") : "";
+  if (avis) montrer("d-msg", avis, false); else cacher("d-msg");
+  document.getElementById("demandes").innerHTML = e.demandes.length ? `
+    <table><thead><tr><th>${t("tab.date")}</th><th>${t("tab.formule")}</th><th>${t("tab.montant")}</th><th>${t("tab.moyen")}</th><th>${t("tab.reference")}</th><th>${t("tab.statut")}</th></tr></thead><tbody>
+    ${e.demandes.map((d) => { const cl = { en_attente: "attente", validee: "ok", refusee: "ko" }[d.statut] || "";
+      const lib = t("statut." + ({ en_attente: "attente", validee: "validee", refusee: "refusee" }[d.statut] || d.statut));
+      return `<tr><td>${dateCourte(d.demandeLe)}</td><td>${echap(libelleFormule(d.formule))}</td><td>${fmt(d.montant)}</td><td>${echap(d.moyen)}</td><td>${echap(d.reference)}</td>
+      <td><span class="badge ${cl}">${lib}</span>${d.motifRefus ? `<div class="sub">${echap(d.motifRefus)}</div>` : ""}</td></tr>`; }).join("")}
+    </tbody></table>` : `<div class="vide">${t("demande.vide")}</div>`;
+  remplirConvertisseur();
+}
+
+document.getElementById("d-envoyer").addEventListener("click", async () => {
+  const bouton = document.getElementById("d-envoyer");
+  bouton.disabled = true;
+  try {
+    await api("POST", "/demande", {
+      formule: document.getElementById("d-formule").value,
+      moyen: document.getElementById("d-moyen").value,
+      reference: document.getElementById("d-reference").value,
+    });
+    montrer("d-msg", t("demande.envoyee"), true);
+    await chargerEtat();
+  } catch (e) {
+    if (e.message !== "session") montrer("d-msg", e.message, false);
+    bouton.disabled = false;
+  }
+});
+
+/* ── Caisse du jour ──────────────────────────────────────────── */
+async function chargerJournee() {
+  if (!document.getElementById("c-date").value) document.getElementById("c-date").value = aujourdhui();
+  const date = document.getElementById("c-date").value;
+  etat.date = date;
+  cacher("c-msg");
+  const j = await api("GET", "/rapports/jour?date=" + encodeURIComponent(date)).catch((e) => {
+    if (e.statut !== 404 && e.message !== "session") montrer("c-msg", e.message, false);
+    return null;
+  });
+  etat.journee = j;
+  document.getElementById("c-ouverture").style.display = j ? "none" : "block";
+  document.getElementById("c-journee").style.display = j ? "block" : "none";
+  if (j) rendreJournee(j, date);
+}
+document.getElementById("c-charger").addEventListener("click", chargerJournee);
+document.getElementById("c-date").addEventListener("change", chargerJournee);
+
+function rendreJournee(j, date) {
+  const cloturee = j.cloturee;
+  document.getElementById("c-stats").innerHTML = `
+    <div class="stat"><small>${t("caisse.theorique")}</small><b>${fmtMru(j.caisseFin)}</b><small>${t("caisse.depart", { v: fmtMru(j.caisseDepart) })}</small></div>
+    <div class="stat"><small>${t("caisse.wave_theorique")}</small><b>${fmt(j.electroniqueFin)}</b><small>${t("caisse.depart", { v: fmt(j.electroniqueDepart) })}</small></div>
+    <div class="stat"><small>${t("tab.depots")}</small><b><span class="nombre">${j.nbDepots}</span> · ${fmt(j.totalDepots)}</b></div>
+    <div class="stat"><small>${t("tab.retraits")}</small><b><span class="nombre">${j.nbRetraits}</span> · ${fmt(j.totalRetraits)}</b></div>
+    <div class="stat"><small>${t("caisse.frais")}</small><b>${fmt(j.fraisTotal)}</b><small>${t("caisse.frais.aide")}</small></div>`;
+  const b = j.bilan;
+  document.getElementById("c-bilan").innerHTML = b ? `
+    <div class="stat"><small>${t("bilan.revenus")}</small><b>${fmtMru(b.revenus)}</b><small>${t("bilan.detail_rev", { c: texte(fmtMru(b.commissionsDepot + b.commissionsRetrait)), a: texte(fmtMru(b.autresRevenus)) })}</small></div>
+    <div class="stat"><small>${t("bilan.charges")}</small><b>${fmtMru(b.charges)}</b><small>${t("bilan.detail_ch", { f: texte(fmtMru(b.fraisElectroniquesAgence)), d: texte(fmtMru(b.depenses + b.autresCharges)) })}</small></div>
+    <div class="stat"><small>${t("bilan.benefice")}</small><b class="${b.etat === "perte" ? "ecart-ko" : b.etat === "benefice" ? "ecart-ok" : ""}">${t("bilan.etat." + b.etat)} · ${fmtMru(b.beneficeNet)}</b><small>${t("bilan.aide")}</small></div>` : "";
+  document.getElementById("o-aide").textContent = cloturee ? t("caisse.cloturee") : "";
+  document.getElementById("o-enregistrer").disabled = cloturee;
+  document.getElementById("u-bascule").textContent = t(afficherMro ? "unite.voir_mru" : "unite.voir_mro");
+  document.getElementById("carte-cloture").style.display = cloturee ? "none" : "block";
+  if (cloturee) document.getElementById("k-resultat").innerHTML = "";
+  chargerOperations(date, cloturee);
+}
+
+async function chargerOperations(date, cloturee) {
+  const h = await api("GET", "/historique?du=" + date + "&au=" + date);
+  const ops = h.operations.slice().sort((a, b) => (a.dateHeure < b.dateHeure ? -1 : 1));
+  document.getElementById("c-operations").innerHTML = ops.length ? `
+    <table><thead><tr><th>${t("tab.heure")}</th><th>${t("tab.type")}</th><th>${t("tab.montant")}</th><th>${t("tab.frais")}</th><th>${t("tab.reference")}</th><th>${t("tab.observation")}</th><th></th></tr></thead><tbody>
+    ${ops.map((o) => `<tr class="${o.annulee ? "annulee" : ""}">
+      <td>${heure(o.dateHeure)}</td><td>${echap(libelleType(o.type))}</td><td>${montantAff(o)}</td><td>${o.frais ? fmt(o.frais) : "—"}</td>
+      <td>${echap(o.reference)}</td><td>${echap(o.observation || o.motif)}${o.annulee ? `<div class="sub">${t("op.annulee", { motif: echap(o.motifAnnulation) })}</div>` : ""}</td>
+      <td>${!o.annulee && !cloturee ?`<button class="btn danger" data-annuler="${echap(o.id)}">${t("op.annuler")}</button>` : ""}</td></tr>`).join("")}
+    </tbody></table>` : `<div class="vide">${t("op.vide")}</div>`;
+  document.querySelectorAll("[data-annuler]").forEach((b) => b.addEventListener("click", () => annuler(b.dataset.annuler, date)));
+}
+
+document.getElementById("c-ouvrir").addEventListener("click", async () => {
+  try {
+    await api("POST", "/journees", {
+      date: document.getElementById("c-date").value,
+      caisseInitiale: Number(document.getElementById("c-caisse-init").value),
+      electroniqueInitial: Number(document.getElementById("c-elec-init").value),
+    });
+    await chargerJournee();
+  } catch (e) { if (e.message !== "session") montrer("c-msg", e.message, false); }
+});
+
+/* Unité du montant selon le type : espèces en MRU, Wave en FCFA. */
+function majFormulaireOperation() {
+  const type = document.getElementById("o-type").value;
+  const ajust = type.startsWith("ajustement_");
+  const mru = uniteType(type) === "MRU";
+  const avecTaux = type === "depot" || type === "retrait";
+  document.getElementById("o-motif-bloc").style.display = ajust ? "flex" : "none";
+  document.getElementById("o-montant-label").textContent = t(mru ? "op.montant_mru" : "op.montant_xof");
+  document.getElementById("o-montant").step = mru ? "0.01" : "1";
+  const aide = [];
+  if (ajust) aide.push(t("op.aide_ajust"));
+  if (avecTaux) {
+    const tx = tauxPourType(type);
+    aide.push(tx
+      ? t("op.aide_taux", { v: tx.mruParFcfa.toLocaleString(locale(), { maximumFractionDigits: 4 }) })
+      : t("op.taux_requis"));
+  }
+  document.getElementById("o-aide").textContent = aide.join(" ");
+  majEquivalent();
+}
+function tauxPourType(type) {
+  if (!etat.taux) return null;
+  if (type === "depot") return etat.taux.depot;
+  if (type === "retrait") return etat.taux.retrait;
+  return null;
+}
+function majEquivalent() {
+  const type = document.getElementById("o-type").value;
+  const v = Number(document.getElementById("o-montant").value);
+  const eq = document.getElementById("o-equiv");
+  const aideFrais = document.getElementById("o-frais-aide");
+  const tx = tauxPourType(type);
+  eq.textContent = tx && v > 0 ? t("op.equiv", { v: texte(fmtMru(Math.round(v * tx.mruParFcfa * 100) / 100)) }) : "";
+  const avecFrais = ["depot", "retrait", "transfert_sortant"].includes(type);
+  const p = etat.parametres && etat.parametres.frais_envoi;
+  if (avecFrais && p && v > 0 && Number.isInteger(v)) {
+    const frais = Math.round(v * p.valeur.pourcent / 100);
+    const total = p.valeur.mode === "supplement" ? v + frais : v;
+    aideFrais.textContent = t("op.frais_aide", {
+      frais: new Intl.NumberFormat(locale()).format(frais),
+      payeur: t("op.frais_payeur." + p.valeur.payeur),
+      total: new Intl.NumberFormat(locale()).format(total),
+    });
+  } else {
+    aideFrais.textContent = "";
+  }
+}
+document.getElementById("o-type").addEventListener("change", majFormulaireOperation);
+document.getElementById("o-montant").addEventListener("input", majEquivalent);
+
+document.getElementById("u-bascule").addEventListener("click", () => {
+  afficherMro = !afficherMro;
+  try { localStorage.setItem("wave_mro", afficherMro ? "1" : "0"); } catch { /* sans stockage : le choix vaut pour cette page */ }
+  chargerJournee();
+  remplirConvertisseur();
+});
+
+document.getElementById("o-enregistrer").addEventListener("click", async () => {
+  const bouton = document.getElementById("o-enregistrer");
+  const type = document.getElementById("o-type").value;
+  const montant = Number(document.getElementById("o-montant").value);
+  const mru = uniteType(type) === "MRU";
+  const valide = Number.isFinite(montant) && montant !== 0 && (mru
+    ? Math.abs(montant * 100 - Math.round(montant * 100)) < 1e-6
+    : Number.isInteger(montant));
+  if (!valide) return montrer("o-msg", mru ? t("op.montant_mru_invalide") : t("op.montant_invalide"), false);
+  bouton.disabled = true;
+  try {
+    await api("POST", "/operations", {
+      date: document.getElementById("c-date").value, type, montant,
+      reference: document.getElementById("o-reference").value,
+      observation: document.getElementById("o-observation").value,
+      motif: document.getElementById("o-motif").value,
+      client: { nom: document.getElementById("o-client-nom").value, telephone: document.getElementById("o-client-tel").value },
+    });
+    ["o-montant", "o-client-nom", "o-client-tel", "o-reference", "o-observation", "o-motif"].forEach((id) => (document.getElementById(id).value = ""));
+    majEquivalent();
+    montrer("o-msg", t("op.enregistree"), true);
+    await chargerJournee();
+  } catch (e) { if (e.message !== "session") montrer("o-msg", e.message, false); }
+  finally { bouton.disabled = false; }
+});
+
+async function annuler(id, date) {
+  const motif = prompt(t("op.motif_annulation"));
+  if (motif === null) return;
+  if (!motif.trim()) return alert(t("op.annulation_motivee"));
+  try {
+    await api("POST", "/operations/" + encodeURIComponent(id) + "/annuler", { date, motif });
+    await chargerJournee();
+  } catch (e) { if (e.message !== "session") alert(e.message); }
+}
+
+document.getElementById("k-cloturer").addEventListener("click", async () => {
+  const caisse = document.getElementById("k-caisse").value;
+  const elec = document.getElementById("k-elec").value;
+  if (caisse === "") return montrer("k-msg", t("cloture.saisir"), false);
+  if (!confirm(t("cloture.confirm"))) return;
+  try {
+    const r = await api("POST", "/cloture", { date: etat.date, caisseComptee: Number(caisse), electroniqueVerifie: elec === "" ? null : Number(elec) });
+    const c = r.cloture;
+    document.getElementById("k-resultat").innerHTML = `
+      <div class="grille">
+        <div class="stat"><small>${t("cloture.ecart_caisse")}</small><b class="${c.ecartCaisse === 0 ? "ecart-ok" : "ecart-ko"}">${c.ecartCaisse > 0 ? "+" : ""}${fmtMru(c.ecartCaisse)}</b></div>
+        <div class="stat"><small>${t("cloture.ecart_wave")}</small><b class="${c.ecartElectronique === null ? "" : c.ecartElectronique === 0 ? "ecart-ok" : "ecart-ko"}">${c.ecartElectronique === null ? t("cloture.non_verifie") : (c.ecartElectronique > 0 ? "+" : "") + fmt(c.ecartElectronique)}</b></div>
+      </div>
+      <p class="sub">${t("cloture.ok")}</p>`;
+    montrer("k-msg", t("cloture.faite"), true);
+    await chargerJournee();
+  } catch (e) { if (e.message !== "session") montrer("k-msg", e.message, false); }
+});
+
+/* ── Convertisseur ───────────────────────────────────────────── */
+function remplirConvertisseur() {
+  const tx = tauxPourType(document.getElementById("conv-mode").value);
+  document.getElementById("conv-taux").textContent = tx
+    ? t("conv.taux", { f: new Intl.NumberFormat(locale()).format(tx.fcfa), v: texte(fmtMru(tx.mru)), date: dateCourte(tx.date) })
+    : t("conv.pas_taux");
+  majFormulaireOperation();
+  majConvMro();
+}
+function majConvMro() {
+  const mru = Number(document.getElementById("conv-mru").value);
+  document.getElementById("conv-mro").textContent = document.getElementById("conv-mru").value !== "" && mru >= 0
+    ? t("conv.mro", { v: new Intl.NumberFormat(locale(), { maximumFractionDigits: 2 }).format(mru * 10) }) : "";
+}
+document.getElementById("conv-mode").addEventListener("change", remplirConvertisseur);
+document.getElementById("conv-fcfa").addEventListener("input", (ev) => {
+  const tx = tauxPourType(document.getElementById("conv-mode").value);
+  const v = Number(ev.target.value);
+  document.getElementById("conv-mru").value = tx && v >= 0 && ev.target.value !== "" ? (Math.round(v * tx.mruParFcfa * 100) / 100) : "";
+  majConvMro();
+});
+document.getElementById("conv-mru").addEventListener("input", (ev) => {
+  const tx = tauxPourType(document.getElementById("conv-mode").value);
+  const v = Number(ev.target.value);
+  document.getElementById("conv-fcfa").value = tx && v >= 0 && ev.target.value !== "" ? Math.round(v / tx.mruParFcfa) : "";
+  majConvMro();
+});
+
+/* ── Historique ──────────────────────────────────────────────── */
+document.getElementById("h-chercher").addEventListener("click", async () => {
+  const p = new URLSearchParams();
+  for (const [cle, id] of [["du", "h-du"], ["au", "h-au"], ["type", "h-type"], ["montantMin", "h-min"], ["montantMax", "h-max"], ["reference", "h-ref"]]) {
+    const v = document.getElementById(id).value;
+    if (v !== "") p.set(cle, v);
+  }
+  try {
+    const h = await api("GET", "/historique?" + p.toString());
+    document.getElementById("h-resultat").innerHTML = h.operations.length ? `
+      <table><thead><tr><th>${t("tab.date")}</th><th>${t("tab.type")}</th><th>${t("tab.montant")}</th><th>${t("tab.frais")}</th><th>${t("tab.reference")}</th><th>${t("tab.statut")}</th></tr></thead><tbody>
+      ${h.operations.map((o) => `<tr class="${o.annulee ? "annulee" : ""}"><td>${dateCourte(o.date)} ${heure(o.dateHeure)}</td><td>${echap(libelleType(o.type))}</td><td>${montantAff(o)}</td><td>${o.frais ? fmt(o.frais) : "—"}</td><td>${echap(o.reference)}</td><td>${o.annulee ? t("hist.annulee") : t("hist.validee")}</td></tr>`).join("")}
+      </tbody></table>` : `<div class="vide">${t("hist.vide")}</div>`;
+  } catch (e) { if (e.message !== "session") alert(e.message); }
+});
+
+/* ── Rapports ────────────────────────────────────────────────── */
+function bloc(r) {
+  return `<div class="grille">
+    <div class="stat"><small>${t("rap.caisse")}</small><b>${fmtMru(r.caisseDepart)} ← ${fmtMru(r.caisseFin)}</b></div>
+    <div class="stat"><small>${t("rap.wave")}</small><b>${fmt(r.electroniqueDepart)} ← ${fmt(r.electroniqueFin)}</b></div>
+    <div class="stat"><small>${t("rap.especes")}</small><b>${fmtMru(r.entreesEspeces)} / ${fmtMru(r.sortiesEspeces)}</b></div>
+    <div class="stat"><small>${t("rap.wave_flux")}</small><b>${fmt(r.entreesWave)} / ${fmt(r.sortiesWave)}</b></div>
+    <div class="stat"><small>${t("tab.depots")}</small><b><span class="nombre">${r.nbDepots}</span> · ${fmt(r.totalDepots)}</b></div>
+    <div class="stat"><small>${t("tab.retraits")}</small><b><span class="nombre">${r.nbRetraits}</span> · ${fmt(r.totalRetraits)}</b></div>
+    <div class="stat"><small>${t("rap.frais")}</small><b>${fmt(r.fraisTotal)}</b></div>
+  </div>`;
+}
+document.getElementById("r-jour-voir").addEventListener("click", async () => {
+  try { document.getElementById("r-jour-resultat").innerHTML = bloc(await api("GET", "/rapports/jour?date=" + document.getElementById("r-jour").value)); }
+  catch (e) { if (e.message !== "session") document.getElementById("r-jour-resultat").innerHTML = `<div class="vide">${echap(e.message)}</div>`; }
+});
+document.getElementById("r-mois-voir").addEventListener("click", async () => {
+  try { document.getElementById("r-mois-resultat").innerHTML = bloc(await api("GET", "/rapports/mois?mois=" + document.getElementById("r-mois").value)); }
+  catch (e) { if (e.message !== "session") document.getElementById("r-mois-resultat").innerHTML = `<div class="vide">${echap(e.message)}</div>`; }
+});
+document.getElementById("r-periode-voir").addEventListener("click", async () => {
+  const p = new URLSearchParams({ du: document.getElementById("r-du").value, au: document.getElementById("r-au").value });
+  try {
+    const r = await api("GET", "/journees?" + p.toString());
+    document.getElementById("r-periode-resultat").innerHTML = r.journees.length ? `
+      <table><thead><tr><th>${t("tab.date")}</th><th>${t("tab.caisse_fin")}</th><th>${t("tab.wave_fin")}</th><th>${t("tab.depots")}</th><th>${t("tab.retraits")}</th><th>${t("tab.frais")}</th><th>${t("tab.ecart_caisse")}</th></tr></thead><tbody>
+      ${r.journees.map((j) => `<tr><td>${dateCourte(j.date)}</td><td>${fmtMru(j.caisseFin)}</td><td>${fmt(j.electroniqueFin)}</td><td><span class="nombre">${j.nbDepots}</span> · ${fmt(j.totalDepots)}</td><td><span class="nombre">${j.nbRetraits}</span> · ${fmt(j.totalRetraits)}</td><td>${fmt(j.fraisTotal)}</td><td>${j.ecartCaisse === null ? t("rap.non_cloturee") : fmt(j.ecartCaisse)}</td></tr>`).join("")}
+      </tbody></table>` : `<div class="vide">${t("rap.aucune_journee")}</div>`;
+  } catch (e) { if (e.message !== "session") alert(e.message); }
+});
+
+/* ── Journal ─────────────────────────────────────────────────── */
+async function chargerJournal() {
+  try {
+    const r = await api("GET", "/journal");
+    document.getElementById("j-liste").innerHTML = r.journal.length ? `
+      <table><thead><tr><th>${t("tab.date")}</th><th>${t("tab.qui")}</th><th>${t("tab.action")}</th><th>${t("tab.detail")}</th></tr></thead><tbody>
+      ${r.journal.map((l) => `<tr><td>${dateCourte(l.quand)} ${heure(l.quand)}</td><td>${echap(l.qui)}</td><td>${echap(l.action)}</td><td class="sub"><span class="nombre">${echap(JSON.stringify(l.detail))}</span></td></tr>`).join("")}
+      </tbody></table>` : `<div class="vide">${t("journal.vide")}</div>`;
+  } catch (e) { if (e.message !== "session") document.getElementById("j-liste").innerHTML = `<div class="vide">${echap(e.message)}</div>`; }
+}
+
+/* Relance l'affichage des zones dynamiques après un changement de langue. */
+async function rafraichir() {
+  if (!etat.compte) return;
+  rendreAccueil();
+  const actif = document.querySelector("#onglets button.actif");
+  if (actif && actif.dataset.onglet === "caisse" && etat.date) chargerJournee();
+  if (actif && actif.dataset.onglet === "journal") chargerJournal();
+}
+
+/* ── Démarrage ───────────────────────────────────────────────── */
+async function chargerCoordonnees() {
+  try {
+    const r = await api("GET", "/coordonnees");
+    const c = r.coordonnees;
+    document.getElementById("coordonnees").innerHTML = ["bankily", "masrivi"].map((m) => `
+      <div class="stat"><small>${m === "bankily" ? "Bankily" : "Masrivi"}</small>
+      <b class="nombre">${c[m] ? echap(c[m]) : t("paiement.a_venir")}</b></div>`).join("");
+  } catch (e) { if (e.message !== "session") document.getElementById("coordonnees").innerHTML = `<div class="vide">${echap(e.message)}</div>`; }
+}
+
+(async function demarrer() {
+  appliquerLangue();
+  chargerCoordonnees();
+  const aujd = aujourdhui();
+  ["c-date", "r-jour", "r-du", "r-au", "h-du", "h-au"].forEach((id) => (document.getElementById(id).value = aujd));
+  document.getElementById("r-mois").value = aujd.slice(0, 7);
+  try { await chargerEtat(); }
+  catch (e) { if (e.message !== "session") document.getElementById("sous-titre").textContent = e.message; }
+})();
+</script>
+</body>
+</html>

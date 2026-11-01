@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choisir votre espace — Najah</title>
+<style>
+  :root { --fond:#f4f7fb; --carte:#ffffff; --texte:#1b2430; --doux:#5b6875; --bord:#d9e0e8; --bleu:#2563eb; --bleu-clair:#eaf1ff; --sarcelle:#0d9488; --sarcelle-clair:#e6f6f3; --indigo:#3730a3; --indigo-clair:#eef0ff; --marine:#1e3a8a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fond:#111820; --carte:#1a232e; --texte:#e7edf2; --doux:#9aa8b5; --bord:#2c3a46; --bleu-clair:#1d2a45; --sarcelle-clair:#15302c; --indigo-clair:#20234a; } }
+  :root[data-theme="dark"] { --fond:#111820; --carte:#1a232e; --texte:#e7edf2; --doux:#9aa8b5; --bord:#2c3a46; --bleu-clair:#1d2a45; --sarcelle-clair:#15302c; --indigo-clair:#20234a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fond); color:var(--texte); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; min-height:100vh; }
+  header { background:var(--carte); border-bottom:1px solid var(--bord); padding:14px 16px; }
+  header a { color:var(--texte); text-decoration:none; font-weight:700; font-size:18px; }
+  main { max-width:1100px; margin:0 auto; padding:32px 16px 48px; }
+  h1 { text-align:center; font-size:28px; margin:0 0 8px; }
+  .sous { text-align:center; color:var(--doux); margin:0 0 32px; font-size:15px; }
+  .grille { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px; align-items:stretch; }
+  .carte { background:var(--carte); border:1px solid var(--bord); border-radius:16px; padding:24px 20px 20px; display:flex; flex-direction:column; gap:18px; }
+  .entete { text-align:center; }
+  .pictogramme { width:64px; height:64px; border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:30px; }
+  .carte h2 { font-size:20px; margin:0; }
+  .precision { color:var(--doux); font-size:14px; margin:2px 0 0; }
+  .profils { display:flex; flex-direction:column; gap:10px; }
+  .profil { display:block; text-decoration:none; color:var(--texte); background:var(--fond); border:1px solid var(--bord); border-radius:12px; padding:12px 14px; }
+  .profil:hover, .profil:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+  .profil strong { display:block; font-size:15px; }
+  .profil ul { margin:6px 0 0; padding-left:18px; color:var(--doux); font-size:13px; line-height:1.5; }
+  .bientot { display:block; text-align:left; background:var(--fond); border:1px dashed var(--bord); border-radius:12px; padding:12px 14px; color:var(--texte); }
+  .bientot strong { display:block; font-size:15px; }
+  .bientot em { display:inline-block; margin-top:6px; font-size:12px; font-style:normal; color:var(--doux); border:1px solid var(--bord); border-radius:999px; padding:2px 8px; }
+  .bientot ul { margin:6px 0 0; padding-left:18px; color:var(--doux); font-size:13px; line-height:1.5; }
+  .bouton { margin-top:auto; display:block; text-align:center; text-decoration:none; color:#fff; font-weight:600; padding:14px; border-radius:12px; font-size:15px; }
+  .educ .pictogramme { background:var(--bleu-clair); color:var(--bleu); }
+  .educ .profil:hover, .educ .profil:focus-visible { color:var(--bleu); }
+  .educ .bouton { background:var(--bleu); }
+  .pharma .pictogramme { background:var(--sarcelle-clair); color:var(--sarcelle); }
+  .pharma .profil:hover, .pharma .profil:focus-visible { color:var(--sarcelle); }
+  .pharma .labo-icone { color:var(--marine); }
+  .pharma .bouton { background:var(--sarcelle); }
+  .ent .pictogramme { background:var(--indigo-clair); color:var(--indigo); }
+  .ent .bouton { background:var(--indigo); }
+  @media (max-width:900px) {
+    .grille { grid-template-columns:1fr; max-width:520px; margin:0 auto; }
+    h1 { font-size:24px; }
+  }
+</style>
+</head>
+<body>
+<header><a href="/">NAJAH</a></header>
+<main>
+  <h1>Quel est votre espace ?</h1>
+  <p class="sous">Choisissez l'espace correspondant à votre profil pour vous connecter.</p>
+
+  <div class="grille">
+
+    <section class="carte educ" aria-labelledby="titre-educ">
+      <div class="entete">
+        <div class="pictogramme" aria-hidden="true">🎓</div>
+        <h2 id="titre-educ">Espace Éducation</h2>
+        <p class="precision">(Najah)</p>
+      </div>
+      <p class="precision" style="margin:0;">Profils :</p>
+      <div class="profils">
+        <a class="profil" href="/connexion-eleve"><strong>📘 Élèves &amp; Étudiants</strong></a>
+        <a class="profil" href="/connexion-parent"><strong>👪 Parents</strong></a>
+        <a class="profil" href="/connexion-prof"><strong>👨‍🏫 Professeurs</strong></a>
+      </div>
+      <a class="bouton" href="/connexion">Se connecter à l'espace Éducation</a>
+    </section>
+
+    <section class="carte pharma" aria-labelledby="titre-pharma">
+      <div class="entete">
+        <div class="pictogramme" aria-hidden="true">⚕️</div>
+        <h2 id="titre-pharma">Espace Pharmaceutique</h2>
+        <p class="precision">(Najah)</p>
+      </div>
+      <div class="profils">
+        <a class="profil" href="/connexion-labo">
+          <strong><span class="labo-icone" aria-hidden="true">🧪</span> Laboratoire</strong>
+          <ul>
+            <li>Recherche</li>
+            <li>Production</li>
+            <li>Direction ventes</li>
+          </ul>
+        </a>
+        <a class="profil" href="/connexion-pharmacie">
+          <strong>💊 Pharmacie</strong>
+          <ul>
+            <li>Titulaire de pharmacie</li>
+            <li>Assistant &amp; personnel</li>
+          </ul>
+        </a>
+      </div>
+      <a class="bouton" href="/pharma">Se connecter à l'espace Pharmaceutique</a>
+    </section>
+
+    <section class="carte ent" aria-labelledby="titre-ent">
+      <div class="entete">
+        <div class="pictogramme" aria-hidden="true">🏢</div>
+        <h2 id="titre-ent">Espace Entreprises</h2>
+        <p class="precision">(Najah)</p>
+      </div>
+      <div class="profils">
+        <a class="profil" href="/wave-connexion.html">
+          <strong>🟦 Gestion d'agence Wave Sénégal</strong>
+          <ul>
+            <li>Caisse du jour, dépôts et retraits</li>
+            <li>Conversion FCFA / MRU, bilan et rapports</li>
+          </ul>
+        </a>
+        <div class="bientot" aria-disabled="true">
+          <strong>Autres réseaux</strong>
+          <ul>
+            <li>Gestion des agences Masrivi</li>
+            <li>Gestion des agences Bankili</li>
+          </ul>
+          <em>Bientôt disponible</em>
+        </div>
+      </div>
+      <a class="bouton" href="/wave-connexion.html">Se connecter à Gestion d'agence Wave Sénégal</a>
+      <a class="bouton" href="/wave-inscription.html" style="background:#fff;color:var(--indigo);border:2px solid var(--indigo);margin-top:8px;">Créer mon compte Wave</a>
+      <a class="bouton" href="/connexion-entreprise" style="background:#fff;color:var(--indigo);border:2px solid var(--indigo);margin-top:8px;">Espace Entreprises (autres services)</a>
+    </section>
+
+  </div>
+</main>
+</body>
+</html>

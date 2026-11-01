@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Najah — Gestion d'agence Wave Sénégal : tarifs et inscription</title>
+<meta name="description" content="Gestion d'agence Wave Sénégal : caisse du jour, dépôts et retraits, conversion FCFA / MRU, rapports. Tarifs et inscription.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bleu:#2563EB; --encre:#0F1E3C; --gris:#6B7A90; --ligne:#E3E8EF; --fond:#F4F6FA; --wave:#12B8EE; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--fond); color:var(--encre); font-family:'Space Grotesk',system-ui,sans-serif; font-size:15px; line-height:1.55; }
+  .wrap{ max-width:900px; margin:0 auto; padding:24px 16px 48px; }
+  .entete{ display:flex; gap:16px; align-items:center; background:#fff; border:1px solid var(--ligne); border-radius:16px; padding:18px; }
+  .entete img{ width:72px; height:72px; border-radius:14px; flex:0 0 auto; }
+  .entete h1{ font-size:22px; line-height:1.25; }
+  .entete p{ color:var(--gris); font-size:14px; margin-top:4px; }
+  h2{ font-size:18px; margin:26px 0 10px; }
+  .texte{ background:#fff; border:1px solid var(--ligne); border-radius:14px; padding:16px; margin-top:14px; }
+  .texte ul{ margin:8px 0 0 20px; }
+  .texte li{ margin:4px 0; }
+  .formules{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .formule{ background:#fff; border:1px solid var(--ligne); border-top:4px solid var(--wave); border-radius:14px; padding:16px; }
+  .formule h3{ font-size:16px; }
+  .prix{ font-size:24px; font-weight:700; margin:8px 0 2px; }
+  .prix small{ font-size:13px; color:var(--gris); font-weight:400; }
+  .etiquette{ display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:#FFF7E0; color:#6B4A00; margin-top:6px; }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .bouton{ display:inline-block; text-decoration:none; font-weight:600; padding:12px 18px; border-radius:12px; border:1px solid var(--bleu); background:var(--bleu); color:#fff; }
+  .bouton.secondaire{ background:#fff; color:var(--bleu); }
+  .note{ font-size:13px; color:var(--gris); margin-top:12px; line-height:1.5; }
+  .vide{ color:var(--gris); padding:12px 0; }
+  .sub{ font-size:13px; color:var(--gris); }
+  @media (max-width:560px){ .entete{ flex-direction:column; text-align:center; } .entete img{ width:88px; height:88px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="entete">
+    <img src="/images/logo-wave.png" alt="Logo Wave">
+    <div>
+      <h1>Gestion d'agence Wave Sénégal</h1>
+      <p>Un outil pour les agences Wave : caisse du jour, dépôts et retraits, conversion FCFA / MRU, rapports journaliers et mensuels, historique complet.</p>
+    </div>
+  </header>
+
+  <section class="texte">
+    <h2 style="margin-top:0">Ce que vous obtenez</h2>
+    <ul>
+      <li>Une caisse du jour : solde physique et solde Wave, séparés, avec les dépôts et retraits.</li>
+      <li>Une clôture de journée qui fige les chiffres et fait apparaître les écarts, sans les corriger automatiquement.</li>
+      <li>Une conversion FCFA / MRU au taux en vigueur, gardé sur chaque opération.</li>
+      <li>Des rapports journaliers et mensuels, et un historique filtrable.</li>
+      <li>Un journal d'activité que personne ne peut modifier.</li>
+    </ul>
+  </section>
+
+  <h2>Tarifs</h2>
+  <div class="formules" id="formules"><div class="vide">Chargement des tarifs…</div></div>
+  <p class="note">Les tarifs ci-dessus sont <strong>proposés</strong> et peuvent encore changer avant la validation finale. Aucun paiement n'est encaissé sur ce site : le paiement se fait à la main par Bankily ou Masrivi, puis l'administration valide votre demande après vérification.</p>
+
+  <h2>Payer et activer</h2>
+  <section class="texte">
+    <ol style="margin-left:20px">
+      <li>Créez votre compte Wave : nom de l'agence, responsable, téléphone et mot de passe.</li>
+      <li>Dans votre espace Wave, choisissez votre formule et envoyez votre demande.</li>
+      <li>Payez le montant par Bankily ou Masrivi au numéro indiqué, puis saisissez la référence du paiement.</li>
+      <li>L'administration vérifie le paiement et active votre accès. Aucune activation n'est automatique.</li>
+    </ol>
+    <p class="note" id="moyens"></p>
+  </section>
+
+  <div class="actions">
+    <a class="bouton" href="/wave-inscription.html">Créer mon compte Wave</a>
+    <a class="bouton secondaire" href="/wave-connexion.html">J'ai déjà un compte</a>
+  </div>
+</div>
+
+<script>
+"use strict";
+const nf = new Intl.NumberFormat("fr-FR");
+const LIBELLE_PERIODE = (f) => (f.dureeJours ? f.dureeJours + " jours" : "sans échéance");
+
+function echap(s) { return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+(async function chargerOffre() {
+  try {
+    const r = await fetch("/api/wave/offre", { credentials: "same-origin" });
+    const o = await r.json();
+    if (!r.ok) throw new Error(o.error || "Erreur " + r.status);
+    document.getElementById("formules").innerHTML = o.formules.map((f) => `
+      <div class="formule">
+        <h3>${echap(f.libelle)}</h3>
+        <div class="prix nombre">${nf.format(f.montant)} <small>MRU</small></div>
+        <div class="sub">${echap(LIBELLE_PERIODE(f))}</div>
+        ${f.statutPrix === "valide" ? "" : '<span class="etiquette">tarif proposé</span>'}
+      </div>`).join("");
+    document.getElementById("moyens").textContent = "Moyens de paiement disponibles pour l'instant : " + o.moyens.join(" et ") + ". Espèces, virement et autres moyens sont indisponibles pour le moment.";
+  } catch (e) {
+    document.getElementById("formules").innerHTML = `<div class="vide">Les tarifs ne sont pas disponibles pour le moment (${echap(e.message)}).</div>`;
+  }
+})();
+</script>
+</body>
+</html>
